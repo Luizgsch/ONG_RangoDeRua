@@ -1,73 +1,51 @@
-# React + TypeScript + Vite
+Aqui está um modelo de README.md direto ao ponto, com um visual limpo e profissional para o seu GitHub, destacando sua stack e o propósito nobre do projeto.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🍲 Rango de Rua - Ecossistema Digital
+Plataforma institucional desenvolvida para a ONG Rango de Rua, que atua há 11 anos no combate à fome, entregando marmitas e dignidade para moradores de rua. O objetivo deste projeto é digitalizar a presença da ONG, facilitando a captação de doações e o recrutamento de voluntários.
 
-Currently, two official plugins are available:
+🚀 Tecnologias
+O projeto utiliza uma arquitetura robusta e moderna para garantir performance e escalabilidade:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Frontend: React 18, TypeScript, Tailwind CSS, Framer Motion (Animações).
 
-## React Compiler
+Backend: Java 17 + Spring Boot (Arquitetura BFF - Backend For Frontend).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Componentes: Shadcn/ui & Lucide Icons.
 
-## Expanding the ESLint configuration
+Integrações: Instagram Basic Display API & Sistemas de Pagamento (Pix/Stripe).
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+📋 Funcionalidades Principais
+Painel de Impacto: Visualização em tempo real de marmitas entregues e metas de arrecadação.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Portal da Transparência: Exposição de governança, prêmios e histórico de 11 anos.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Fluxo de Doação: Integração direta com sistemas de pagamento para doações rápidas.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Mural Social: Feed dinâmico integrado ao Instagram da ONG.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Central do Voluntário: Área dedicada para novos interessados e cronograma de ações.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+🛠️ Como rodar o projeto
+Pré-requisitos
+Node.js (v18+)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+JDK 17+
+
+Maven
+
+Instalação (Frontend)
+Bash
+# Instalar dependências
+npm install
+
+# Rodar em modo de desenvolvimento
+npm run dev
+Instalação (Backend)
+Bash
+# Compilar o projeto
+./mvnw clean install
+
+# Rodar a aplicação
+./mvnw spring-boot:run
+🤝 Contribuição
+Este é um projeto de impacto social. Se você deseja ajudar na operação da ONG ou no desenvolvimento deste software, entre em contato através da aba de Issues.
