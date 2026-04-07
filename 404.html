@@ -1,19 +1,38 @@
 <!doctype html>
-<html>
+<html lang="pt-BR">
   <head>
-    <meta charset="utf-8" />
-    <script>
-      // GitHub Pages SPA redirect
-      // Redirects all paths to index.html preserving the path as a query param
-      var seg = 1;
-      var l = window.location;
-      l.replace(
-        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-        l.pathname.split('/').slice(0, 1 + seg).join('/') + '/?p=/' +
-        l.pathname.slice(1).split('/').slice(seg).join('/').replace(/&/g, '~and~') +
-        (l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-        l.hash
-      );
-    </script>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/ONG_RangoDeRua/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Rango de Rua – ONG que leva marmitas e dignidade para quem mais precisa nas ruas. Seja voluntário ou faça uma doação." />
+    <meta property="og:title" content="Rango de Rua" />
+    <meta property="og:description" content="13 anos levando marmitas e afeto para as ruas. Faça parte dessa corrente do bem." />
+    <meta property="og:type" content="website" />
+    <title>Rango de Rua – Alimentando com amor desde 2013</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <script type="module" crossorigin src="/ONG_RangoDeRua/assets/index-NvmB1Q2X.js"></script>
+    <link rel="stylesheet" crossorigin href="/ONG_RangoDeRua/assets/index-D5OYvY2l.css">
   </head>
+  <body>
+    <script>
+      // GitHub Pages SPA: restore path from redirect
+      (function() {
+        var l = window.location;
+        if (l.search[1] === 'p') {
+          var decoded = l.search.slice(1).split('&').map(function(s) {
+            return s.replace(/~and~/g, '&');
+          });
+          window.history.replaceState(
+            null, null,
+            l.pathname.slice(0, -1) + (decoded[0] ? '/' + decoded[0] : '') +
+            (decoded[1] ? '?' + decoded[1] : '') +
+            l.hash
+          );
+        }
+      })();
+    </script>
+    <div id="root"></div>
+  </body>
 </html>
