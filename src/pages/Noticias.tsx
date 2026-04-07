@@ -6,7 +6,7 @@ const news = [
     color: 'yellow',
     emoji: '🍱',
     category: 'Saída',
-    title: 'Saída de março: 80 marmitas entregues no centro de SP',
+    title: 'Saída de março: 80 marmitas entregues no centro de Curitiba',
     excerpt: 'Com um time de 25 voluntários, o Rango de Rua realizou mais uma saída especial com marmitas de frango ao molho e kits de higiene.',
   },
   {

@@ -8,7 +8,7 @@ export default function Hero() {
       <div className="container hero__content fade-up">
         <div className="hero__tag-row">
           <span className="tag tag--yellow">🍱 11 anos nas ruas</span>
-          <span className="tag tag--orange">São Paulo, SP</span>
+          <span className="tag tag--orange">Curitiba, PR</span>
         </div>
 
         <h1 className="hero__title">

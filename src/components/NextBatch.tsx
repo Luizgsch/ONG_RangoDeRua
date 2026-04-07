@@ -7,7 +7,7 @@ const nextDate = {
   year: '2026',
   weekday: 'Domingo',
   time: '08h00',
-  location: 'Praça da Sé – Centro, SP',
+  location: 'Centro – Curitiba, PR',
   spots: 12,
   totalSpots: 30,
 }

@@ -99,7 +99,7 @@ Para exercer qualquer um desses direitos, entre em contato conosco.`,
 
 📧 E-mail: privacidade@rangoderua.org.br
 📱 WhatsApp: (11) 99999-9999
-📬 Endereço: São Paulo, SP – Brasil
+📬 Endereço: Curitiba, PR – Brasil
 
 Respondemos em até 15 dias úteis.`,
             },

@@ -17,7 +17,7 @@ export default function About() {
             <h2>11 anos alimentando<br />quem mais precisa</h2>
             <p>
               O Rango de Rua nasceu em 2013 da vontade de um grupo de
-              amigos em São Paulo que não conseguia fechar os olhos para
+              amigos em Curitiba que não conseguia fechar os olhos para
               a realidade das pessoas em situação de rua. O que começou
               como uma iniciativa de fim de semana se transformou em uma
               das maiores redes de voluntariado alimentar da cidade.
@@ -25,7 +25,7 @@ export default function About() {
             <p>
               Hoje, realizamos saídas duas vezes por mês, levando marmitas
               quentes e kits de higiene para quem mais precisa. Atuamos em
-              diversos bairros de São Paulo, sempre com respeito, escuta e
+              diversos bairros de Curitiba, sempre com respeito, escuta e
               muito carinho.
             </p>
             <div className="about__mission-grid">

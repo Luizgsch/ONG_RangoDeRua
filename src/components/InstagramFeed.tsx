@@ -2,7 +2,7 @@ import './InstagramFeed.css'
 
 // Placeholder posts – will be replaced with real Instagram API integration
 const posts = [
-  { id: 1, emoji: '🍱', caption: 'Mais uma saída incrível! 50 marmitas entregues no centro de SP com muito amor ❤️', likes: 342, color: 'yellow' },
+  { id: 1, emoji: '🍱', caption: 'Mais uma saída incrível! 50 marmitas entregues no centro de Curitiba com muito amor ❤️', likes: 342, color: 'yellow' },
   { id: 2, emoji: '🤝', caption: 'Novos voluntários chegando! Bem-vindos à família Rango de Rua 🙌', likes: 218, color: 'orange' },
   { id: 3, emoji: '🌱', caption: 'Parceria com a Horta Viva: ingredientes frescos nas nossas marmitas 🥦', likes: 195, color: 'green' },
   { id: 4, emoji: '📦', caption: 'Arrecadação do Mutirão do Bem: 200kg de alimentos recolhidos! 📦', likes: 401, color: 'blue' },

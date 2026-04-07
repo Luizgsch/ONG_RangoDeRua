@@ -62,7 +62,7 @@ export default function Footer() {
 
         <div className="footer__bottom">
           <p>© {new Date().getFullYear()} Rango de Rua. Todos os direitos reservados.</p>
-          <p>CNPJ: XX.XXX.XXX/0001-XX · São Paulo, SP</p>
+          <p>CNPJ: XX.XXX.XXX/0001-XX · Curitiba, PR</p>
         </div>
       </div>
     </footer>

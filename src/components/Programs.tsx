@@ -28,9 +28,9 @@ const programs = [
   {
     color: 'blue',
     emoji: '🤝',
-    title: 'Rede de Apoio SP',
+    title: 'Rede de Apoio Curitiba',
     category: 'Programa em parceria',
-    desc: 'Articulação entre ONGs e entidades assistenciais de São Paulo para troca de recursos, voluntários e informações sobre pontos de atendimento.',
+    desc: 'Articulação entre ONGs e entidades assistenciais de Curitiba para troca de recursos, voluntários e informações sobre pontos de atendimento.',
     frequency: 'Contínuo',
   },
   {
