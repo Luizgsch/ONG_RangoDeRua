@@ -1,0 +1,111 @@
+.nextbatch {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.nextbatch::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--clr-yellow), var(--clr-orange));
+}
+
+.nextbatch__badge { text-align: center; }
+
+.nextbatch__main {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.nextbatch__date {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+}
+.nextbatch__day {
+  font-family: var(--font-heading);
+  font-size: 5rem;
+  font-weight: 800;
+  color: var(--clr-yellow);
+  line-height: 1;
+}
+.nextbatch__month, .nextbatch__weekday {
+  display: block;
+  font-family: var(--font-heading);
+}
+.nextbatch__month {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-h);
+}
+.nextbatch__weekday {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.nextbatch__divider {
+  width: 1px;
+  height: 80px;
+  background: var(--border);
+}
+
+.nextbatch__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 220px;
+}
+.nextbatch__detail {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+.nextbatch__detail span { font-size: 1.1rem; }
+.nextbatch__detail strong { color: var(--text-h); }
+
+.nextbatch__spots { display: flex; flex-direction: column; gap: 0.4rem; }
+.nextbatch__spots-text { display: flex; justify-content: space-between; font-size: 0.875rem; color: var(--text-muted); }
+.nextbatch__spots-num  { font-weight: 700; }
+
+.nextbatch__bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.nextbatch__bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.6s ease;
+}
+
+.nextbatch__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+.nextbatch__actions p { font-size: 0.8rem; color: var(--text-muted); max-width: 100%; }
+
+@media (max-width: 600px) {
+  .nextbatch__divider { display: none; }
+  .nextbatch__main { gap: 1.5rem; }
+  .nextbatch__date { justify-content: center; }
+}

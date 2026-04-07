@@ -1,0 +1,74 @@
+.instagram__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.instagram__post {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, border-color 0.2s;
+  text-decoration: none;
+}
+.instagram__post:hover { transform: translateY(-4px); }
+
+.instagram__post--yellow:hover { border-color: var(--clr-yellow); }
+.instagram__post--orange:hover { border-color: var(--clr-orange); }
+.instagram__post--green:hover  { border-color: var(--clr-green);  }
+.instagram__post--blue:hover   { border-color: var(--clr-blue);   }
+.instagram__post--purple:hover { border-color: var(--clr-purple); }
+.instagram__post--pink:hover   { border-color: var(--clr-pink);   }
+
+.instagram__thumb {
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+}
+.instagram__thumb--yellow { background: rgba(245,200,0,0.1);  }
+.instagram__thumb--orange { background: rgba(249,115,22,0.1); }
+.instagram__thumb--green  { background: rgba(34,197,94,0.1);  }
+.instagram__thumb--blue   { background: rgba(59,130,246,0.1); }
+.instagram__thumb--purple { background: rgba(168,85,247,0.1); }
+.instagram__thumb--pink   { background: rgba(236,72,153,0.1); }
+
+.instagram__info {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+.instagram__info p {
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.5;
+  max-width: 100%;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.instagram__likes {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.instagram__cta {
+  text-align: center;
+  margin-top: 2.5rem;
+}
+.instagram__cta .btn { gap: 0.5rem; }
+
+@media (max-width: 768px) {
+  .instagram__grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .instagram__grid { grid-template-columns: 1fr 1fr; }
+  .instagram__thumb { height: 130px; font-size: 3rem; }
+}

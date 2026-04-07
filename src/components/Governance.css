@@ -1,0 +1,70 @@
+.governance__layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+.governance__layout h3 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+}
+
+.governance__team {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.governance__member {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  transition: border-color 0.2s;
+}
+.governance__avatar { font-size: 1.75rem; }
+.governance__member div { display: flex; flex-direction: column; gap: 0.15rem; }
+.governance__member strong { color: var(--text-h); font-size: 0.95rem; }
+.governance__member span   { color: var(--text-muted); font-size: 0.825rem; }
+
+.governance__member--yellow:hover { border-color: var(--clr-yellow); }
+.governance__member--orange:hover { border-color: var(--clr-orange); }
+.governance__member--green:hover  { border-color: var(--clr-green);  }
+.governance__member--blue:hover   { border-color: var(--clr-blue);   }
+
+.governance__doc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.governance__doc {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.governance__doc:hover { transform: translateX(4px); }
+.governance__doc span:first-child { font-size: 1.25rem; }
+.governance__doc span:nth-child(2) { color: var(--text); font-size: 0.9rem; flex: 1; }
+.governance__doc-action { color: var(--text-muted); font-size: 0.8rem; margin-left: auto; }
+
+.governance__doc--yellow:hover { border-color: var(--clr-yellow); }
+.governance__doc--blue:hover   { border-color: var(--clr-blue);   }
+.governance__doc--green:hover  { border-color: var(--clr-green);  }
+.governance__doc--orange:hover { border-color: var(--clr-orange); }
+
+@media (max-width: 768px) {
+  .governance__layout { grid-template-columns: 1fr; }
+}
