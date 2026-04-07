@@ -1,4 +1,4 @@
-Aqui está um modelo de README.md direto ao ponto, com um visual limpo e profissional para o seu GitHub, destacando sua stack e o propósito nobre do projeto.
+
 
 🍲 Rango de Rua - Ecossistema Digital
 Plataforma institucional desenvolvida para a ONG Rango de Rua, que atua há 11 anos no combate à fome, entregando marmitas e dignidade para moradores de rua. O objetivo deste projeto é digitalizar a presença da ONG, facilitando a captação de doações e o recrutamento de voluntários.
