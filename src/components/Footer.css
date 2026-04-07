@@ -12,6 +12,14 @@
   margin-bottom: 3rem;
 }
 
+.footer__logo-img {
+  height: 56px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
 .footer__logo {
   font-family: var(--font-heading);
   font-size: 1.5rem;

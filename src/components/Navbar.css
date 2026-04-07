@@ -26,11 +26,15 @@
   font-weight: 700;
   color: var(--text-h);
 }
-.navbar__brand-icon { font-size: 1.6rem; }
-.navbar__brand strong {
-  color: var(--clr-yellow);
-  font-weight: 800;
+.navbar__brand-logo {
+  height: 42px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 6px;
+  transition: opacity 0.2s;
 }
+.navbar__brand:hover .navbar__brand-logo { opacity: 0.85; }
+.navbar--scrolled .navbar__brand-logo { height: 36px; }
 
 .navbar__nav {
   display: flex;

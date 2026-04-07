@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import logo from '../assets/Logo.jpg'
 import './Footer.css'
 
 export default function Footer() {
@@ -7,7 +8,7 @@ export default function Footer() {
       <div className="container">
         <div className="footer__grid">
           <div className="footer__brand">
-            <p className="footer__logo">🍱 Rango<strong>de Rua</strong></p>
+            <img src={logo} alt="Rango de Rua" className="footer__logo-img" />
             <p className="footer__tagline">
               Alimentando corpos e corações desde 2013.<br />
               Cada marmita é um ato de amor.

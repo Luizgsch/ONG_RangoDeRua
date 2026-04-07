@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink, Link } from 'react-router-dom'
+import logo from '../assets/Logo.jpg'
 import './Navbar.css'
 
 const links = [
@@ -24,8 +25,7 @@ export default function Navbar() {
     <header className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}>
       <div className="container flex-between navbar__inner">
         <Link to="/" className="navbar__brand">
-          <span className="navbar__brand-icon">🍱</span>
-          <span>Rango<strong>de Rua</strong></span>
+          <img src={logo} alt="Rango de Rua" className="navbar__brand-logo" />
         </Link>
 
         <nav className={`navbar__nav${open ? ' navbar__nav--open' : ''}`}>
