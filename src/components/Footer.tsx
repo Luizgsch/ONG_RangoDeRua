@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import logo from '../assets/Logo.jpg'
+import { homeHashFragment } from '../homeHref'
 import './Footer.css'
 
 export default function Footer() {
@@ -32,11 +33,11 @@ export default function Footer() {
           <div className="footer__col">
             <h4>Navegação</h4>
             <ul>
-              <li><a href="/#sobre">Sobre nós</a></li>
-              <li><a href="/#o-que-fazemos">O que fazemos</a></li>
-              <li><a href="/#frentes">Frentes de atuação</a></li>
-              <li><a href="/#programas">Programas</a></li>
-              <li><a href="/#numeros">Números</a></li>
+              <li><a href={homeHashFragment('sobre')}>Sobre nós</a></li>
+              <li><a href={homeHashFragment('o-que-fazemos')}>O que fazemos</a></li>
+              <li><a href={homeHashFragment('frentes')}>Frentes de atuação</a></li>
+              <li><a href={homeHashFragment('programas')}>Programas</a></li>
+              <li><a href={homeHashFragment('numeros')}>Números</a></li>
               <li><Link to="/noticias">Notícias</Link></li>
             </ul>
           </div>
@@ -46,8 +47,8 @@ export default function Footer() {
             <ul>
               <li><Link to="/voluntario">Seja voluntário</Link></li>
               <li><Link to="/doacoes">Faça uma doação</Link></li>
-              <li><a href="/#parceiros">Seja parceiro</a></li>
-              <li><a href="/#contato">Fale conosco</a></li>
+              <li><a href={homeHashFragment('parceiros')}>Seja parceiro</a></li>
+              <li><a href={homeHashFragment('contato')}>Fale conosco</a></li>
             </ul>
           </div>
 
@@ -55,8 +56,8 @@ export default function Footer() {
             <h4>Legal</h4>
             <ul>
               <li><Link to="/politica-privacidade">Política de privacidade</Link></li>
-              <li><a href="/#governanca">Governança</a></li>
-              <li><a href="/#transparencia">Transparência</a></li>
+              <li><a href={homeHashFragment('governanca')}>Governança</a></li>
+              <li><a href={homeHashFragment('transparencia')}>Transparência</a></li>
             </ul>
           </div>
         </div>

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import './NextBatch.css'
 
 // This section announces the next marmita distribution date
@@ -58,9 +59,9 @@ export default function NextBatch() {
             </div>
 
             <div className="nextbatch__actions">
-              <a href="/voluntario" className="btn btn--primary btn--lg">
+              <Link to="/voluntario" className="btn btn--primary btn--lg">
                 Quero participar
-              </a>
+              </Link>
               <p>Chegue com 30 min de antecedência</p>
             </div>
           </div>

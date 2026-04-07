@@ -1,3 +1,4 @@
+import { homeHashFragment } from '../homeHref'
 import './Partners.css'
 
 const investors = [
@@ -54,7 +55,7 @@ export default function Partners() {
 
         <div className="partners__cta">
           <p>Sua empresa também pode fazer parte dessa história.</p>
-          <a href="/#contato" className="btn btn--outline">Quero ser parceiro</a>
+          <a href={homeHashFragment('contato')} className="btn btn--outline">Quero ser parceiro</a>
         </div>
       </div>
     </section>

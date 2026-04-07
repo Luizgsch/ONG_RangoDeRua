@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import logo from '../assets/Logo.jpg'
+import { homeHashFragment } from '../homeHref'
 import './Navbar.css'
 
-const links = [
-  { to: '/#sobre',     label: 'Sobre' },
-  { to: '/#o-que-fazemos', label: 'O que fazemos' },
-  { to: '/#numeros',   label: 'Números' },
-  { to: '/noticias',   label: 'Notícias' },
-  { to: '/#contato',   label: 'Contato' },
+const links: (
+  | { kind: 'hash'; id: string; label: string }
+  | { kind: 'route'; to: string; label: string }
+)[] = [
+  { kind: 'hash', id: 'sobre', label: 'Sobre' },
+  { kind: 'hash', id: 'o-que-fazemos', label: 'O que fazemos' },
+  { kind: 'hash', id: 'numeros', label: 'Números' },
+  { kind: 'route', to: '/noticias', label: 'Notícias' },
+  { kind: 'hash', id: 'contato', label: 'Contato' },
 ]
 
 export default function Navbar() {
@@ -29,11 +33,27 @@ export default function Navbar() {
         </Link>
 
         <nav className={`navbar__nav${open ? ' navbar__nav--open' : ''}`}>
-          {links.map(l => (
-            <a key={l.to} href={l.to} className="navbar__link" onClick={() => setOpen(false)}>
-              {l.label}
-            </a>
-          ))}
+          {links.map(l =>
+            l.kind === 'hash' ? (
+              <a
+                key={l.id}
+                href={homeHashFragment(l.id)}
+                className="navbar__link"
+                onClick={() => setOpen(false)}
+              >
+                {l.label}
+              </a>
+            ) : (
+              <Link
+                key={l.to}
+                to={l.to}
+                className="navbar__link"
+                onClick={() => setOpen(false)}
+              >
+                {l.label}
+              </Link>
+            )
+          )}
           <NavLink to="/voluntario" className="btn btn--primary" onClick={() => setOpen(false)}>
             Seja voluntário
           </NavLink>

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { homeHashFragment } from '../homeHref'
 import './Hero.css'
 
 export default function Hero() {
@@ -28,7 +29,7 @@ export default function Hero() {
           <Link to="/doacoes" className="btn btn--orange btn--lg">
             Fazer doação
           </Link>
-          <a href="/#sobre" className="btn btn--secondary btn--lg">
+          <a href={homeHashFragment('sobre')} className="btn btn--secondary btn--lg">
             Conhecer a ONG
           </a>
         </div>
