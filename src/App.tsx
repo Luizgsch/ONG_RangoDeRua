@@ -9,7 +9,7 @@ import PoliticaPrivacidade from './pages/PoliticaPrivacidade'
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/ONG_RangoDeRua">
       <Navbar />
       <main>
         <Routes>
