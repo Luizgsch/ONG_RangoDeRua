@@ -7,7 +7,6 @@ const awards = [
     title: 'Prêmio Voluntário Nacional',
     org: 'Ministério da Cidadania',
     desc: 'Reconhecimento pelo impacto no voluntariado alimentar urbano.',
-    icon: '🏆',
   },
   {
     year: '2021',
@@ -15,7 +14,6 @@ const awards = [
     title: 'Top 10 ONGs do PR',
     org: 'Associação Paranaense de ONGs',
     desc: 'Selecionados entre as 10 organizações com maior impacto social no Paraná.',
-    icon: '🥇',
   },
   {
     year: '2020',
@@ -23,7 +21,6 @@ const awards = [
     title: 'Reconhecimento Câmara Municipal',
     org: 'Câmara Municipal de Curitiba',
     desc: 'Moção de aplausos pelos serviços prestados durante a pandemia.',
-    icon: '🏛️',
   },
   {
     year: '2018',
@@ -31,7 +28,6 @@ const awards = [
     title: 'Seleção Redes da Maré',
     org: 'Instituto Redes da Maré',
     desc: 'Projeto selecionado para programa de aceleração de organizações sociais.',
-    icon: '🌱',
   },
 ]
 
@@ -51,7 +47,6 @@ export default function Awards() {
             <div className={`awards__item awards__item--${idx % 2 === 0 ? 'left' : 'right'}`} key={a.title}>
               <div className={`awards__year awards__year--${a.color}`}>{a.year}</div>
               <div className={`awards__card awards__card--${a.color}`}>
-                <span className="awards__icon">{a.icon}</span>
                 <div>
                   <h4>{a.title}</h4>
                   <span className={`tag tag--${a.color}`} style={{ marginBottom: '0.5rem', display: 'inline-block' }}>{a.org}</span>

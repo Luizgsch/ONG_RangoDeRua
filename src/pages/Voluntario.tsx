@@ -2,10 +2,10 @@ import { useState } from 'react'
 import './Voluntario.css'
 
 const steps = [
-  { icon: '📋', title: 'Preencha o formulário', desc: 'Nos conte um pouco sobre você, sua disponibilidade e motivação.' },
-  { icon: '📞', title: 'Entraremos em contato', desc: 'Nossa equipe de voluntariado vai analisar seu perfil e fazer o contato.' },
-  { icon: '🎓', title: 'Formação gratuita', desc: 'Você passará por uma capacitação humanizada antes da primeira saída.' },
-  { icon: '🍱', title: 'Primeira saída', desc: 'Você já está pronto para ir às ruas e transformar vidas!' },
+  { title: 'Preencha o formulário', desc: 'Nos conte um pouco sobre você, sua disponibilidade e motivação.' },
+  { title: 'Entraremos em contato', desc: 'Nossa equipe de voluntariado vai analisar seu perfil e fazer o contato.' },
+  { title: 'Formação gratuita', desc: 'Você passará por uma capacitação humanizada antes da primeira saída.' },
+  { title: 'Primeira saída', desc: 'Você já está pronto para ir às ruas e transformar vidas!' },
 ]
 
 const faqs = [
@@ -36,7 +36,7 @@ export default function Voluntario() {
       <section className="vol-hero">
         <div className="vol-hero__bg" aria-hidden />
         <div className="container vol-hero__content">
-          <span className="tag tag--yellow">🙌 Voluntariado</span>
+          <span className="tag tag--yellow">Voluntariado</span>
           <h1>Faça parte do<br /><span className="hero__highlight">Rango de Rua</span></h1>
           <p>Junte-se a mais de 200 voluntários que já transformaram vidas. É gratuito, é formativo, é amor em ação.</p>
         </div>
@@ -54,7 +54,6 @@ export default function Voluntario() {
             {steps.map((s, i) => (
               <div className="vol-step" key={s.title}>
                 <div className="vol-step__num">{i + 1}</div>
-                <span className="vol-step__icon">{s.icon}</span>
                 <h4>{s.title}</h4>
                 <p>{s.desc}</p>
               </div>
@@ -72,7 +71,7 @@ export default function Voluntario() {
               <p>Preencha o formulário e nossa equipe entrará em contato para dar os próximos passos.</p>
               <div className="vol-highlights">
                 {['100% gratuito', 'Formação incluída', 'Flexibilidade de horário', 'Comunidade incrível'].map(h => (
-                  <div key={h} className="vol-highlight"><span>✅</span> {h}</div>
+                  <div key={h} className="vol-highlight"> {h}</div>
                 ))}
               </div>
             </div>
@@ -80,7 +79,6 @@ export default function Voluntario() {
             <div className="vol-form-box">
               {sent ? (
                 <div className="contact__success">
-                  <span>🎉</span>
                   <h3>Incrível! Inscrição recebida!</h3>
                   <p>Obrigado! Nossa equipe vai entrar em contato em até 5 dias úteis.</p>
                 </div>

@@ -1,10 +1,10 @@
 import './Governance.css'
 
 const team = [
-  { role: 'Presidenta', name: 'Ana Paula Souza',  color: 'yellow', emoji: '👩' },
-  { role: 'Vice-presidenta', name: 'Carla Lima',  color: 'orange', emoji: '👩' },
-  { role: 'Diretora financeira', name: 'Marina Costa', color: 'green', emoji: '👩' },
-  { role: 'Coord. de Voluntários', name: 'Pedro Alves', color: 'blue', emoji: '👨' },
+  { role: 'Presidenta', name: 'Ana Paula Souza',  color: 'yellow' },
+  { role: 'Vice-presidenta', name: 'Carla Lima',  color: 'orange' },
+  { role: 'Diretora financeira', name: 'Marina Costa', color: 'green' },
+  { role: 'Coord. de Voluntários', name: 'Pedro Alves', color: 'blue' },
 ]
 
 export default function Governance() {
@@ -24,7 +24,7 @@ export default function Governance() {
             <div className="governance__team">
               {team.map(t => (
                 <div className={`governance__member governance__member--${t.color}`} key={t.name}>
-                  <span className="governance__avatar">{t.emoji}</span>
+                  <div className="governance__avatar">{t.name.split(' ').map(n => n[0]).join('').slice(0,2)}</div>
                   <div>
                     <strong>{t.name}</strong>
                     <span>{t.role}</span>
@@ -38,13 +38,12 @@ export default function Governance() {
             <h3>Documentos</h3>
             <div className="governance__doc-list">
               {[
-                { icon: '📄', label: 'Estatuto Social', color: 'yellow' },
-                { icon: '📊', label: 'Relatório anual 2023', color: 'blue' },
-                { icon: '💰', label: 'Prestação de contas 2023', color: 'green' },
-                { icon: '🏛️', label: 'CNPJ e registros', color: 'orange' },
+                { label: 'Estatuto Social', color: 'yellow' },
+                { label: 'Relatório anual 2023', color: 'blue' },
+                { label: 'Prestação de contas 2023', color: 'green' },
+                { label: 'CNPJ e registros', color: 'orange' },
               ].map(d => (
                 <div className={`governance__doc governance__doc--${d.color}`} key={d.label}>
-                  <span>{d.icon}</span>
                   <span>{d.label}</span>
                   <span className="governance__doc-action">↓ Download</span>
                 </div>

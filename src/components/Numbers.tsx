@@ -1,12 +1,12 @@
 import './Numbers.css'
 
 const stats = [
-  { value: '+50.000', label: 'Marmitas entregues',     color: 'yellow', icon: '🍱' },
-  { value: '+200',    label: 'Voluntários formados',    color: 'orange', icon: '🙌' },
-  { value: '11',      label: 'Anos de atuação',         color: 'green',  icon: '🌿' },
-  { value: '2x',      label: 'Saídas por mês',          color: 'blue',   icon: '🚗' },
-  { value: '+30',     label: 'Parceiros e apoiadores',  color: 'purple', icon: '🤝' },
-  { value: '+15',     label: 'Bairros atendidos em SP', color: 'pink',   icon: '📍' },
+  { value: '+50.000', label: 'Marmitas entregues',     color: 'yellow' },
+  { value: '+200',    label: 'Voluntários formados',    color: 'orange' },
+  { value: '13',      label: 'Anos de atuação',         color: 'green'  },
+  { value: '2x',      label: 'Saídas por mês',          color: 'blue'   },
+  { value: '+30',     label: 'Parceiros e apoiadores',  color: 'purple' },
+  { value: '+15',     label: 'Bairros atendidos no PR', color: 'pink'   },
 ]
 
 export default function Numbers() {
@@ -23,7 +23,6 @@ export default function Numbers() {
         <div className="numbers__grid">
           {stats.map(s => (
             <div className={`numbers__card numbers__card--${s.color}`} key={s.label}>
-              <span className="numbers__icon">{s.icon}</span>
               <span className="stat-value">{s.value}</span>
               <span className="stat-label">{s.label}</span>
             </div>

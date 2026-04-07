@@ -28,9 +28,9 @@ export default function Contact() {
         <div className="contact__layout">
           <div className="contact__channels">
             {[
-              { icon: '📱', label: 'WhatsApp', value: '(11) 99999-9999', color: 'green', href: 'https://wa.me/5511999999999' },
-              { icon: '📧', label: 'E-mail',   value: 'contato@rangoderua.org.br', color: 'blue', href: 'mailto:contato@rangoderua.org.br' },
-              { icon: '📸', label: 'Instagram', value: '@rangoderua', color: 'pink', href: 'https://www.instagram.com/rangoderua' },
+              { label: 'WhatsApp', value: '(11) 99999-9999', color: 'green', href: 'https://wa.me/5511999999999' },
+              { label: 'E-mail',   value: 'contato@rangoderua.org.br', color: 'blue', href: 'mailto:contato@rangoderua.org.br' },
+              { label: 'Instagram', value: '@rangoderua', color: 'pink', href: 'https://www.instagram.com/rangoderua' },
             ].map(c => (
               <a
                 key={c.label}
@@ -39,7 +39,6 @@ export default function Contact() {
                 rel="noreferrer"
                 className={`contact__channel contact__channel--${c.color}`}
               >
-                <span className="contact__ch-icon">{c.icon}</span>
                 <div>
                   <strong>{c.label}</strong>
                   <span>{c.value}</span>
@@ -51,7 +50,6 @@ export default function Contact() {
           <form className="contact__form" onSubmit={handleSubmit}>
             {sent ? (
               <div className="contact__success">
-                <span>🎉</span>
                 <h3>Mensagem enviada!</h3>
                 <p>Obrigado pelo contato. Responderemos em breve!</p>
               </div>

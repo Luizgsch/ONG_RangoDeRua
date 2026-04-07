@@ -7,7 +7,7 @@ export default function Hero() {
       <div className="hero__bg-grid" aria-hidden />
       <div className="container hero__content fade-up">
         <div className="hero__tag-row">
-          <span className="tag tag--yellow">🍱 11 anos nas ruas</span>
+          <span className="tag tag--yellow">13 anos de história</span>
           <span className="tag tag--orange">Curitiba, PR</span>
         </div>
 
@@ -36,7 +36,7 @@ export default function Hero() {
         <div className="hero__stats">
           {[
             { value: '+50.000', label: 'marmitas entregues' },
-            { value: '11 anos', label: 'de atuação' },
+            { value: '13 anos', label: 'de atuação' },
             { value: '+200',   label: 'voluntários formados' },
             { value: '2x/mês', label: 'levadas nas ruas' },
           ].map(s => (

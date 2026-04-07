@@ -14,7 +14,7 @@ export default function About() {
         <div className="about__layout">
           <div className="about__text fade-up">
             <span className="tag tag--yellow">Nossa história</span>
-            <h2>11 anos alimentando<br />quem mais precisa</h2>
+            <h2>13 anos alimentando<br />quem mais precisa</h2>
             <p>
               O Rango de Rua nasceu em 2013 da vontade de um grupo de
               amigos em Curitiba que não conseguia fechar os olhos para

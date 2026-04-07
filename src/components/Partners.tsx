@@ -1,19 +1,19 @@
 import './Partners.css'
 
 const investors = [
-  { name: 'Empresa Alpha',   emoji: '🏢', color: 'yellow' },
-  { name: 'Beta Indústrias', emoji: '🏭', color: 'blue'   },
-  { name: 'Gamma Corp',      emoji: '💼', color: 'green'  },
-  { name: 'Delta Soluções',  emoji: '⚙️', color: 'orange' },
+  { name: 'Empresa Alpha',   color: 'yellow' },
+  { name: 'Beta Indústrias', color: 'blue'   },
+  { name: 'Gamma Corp',      color: 'green'  },
+  { name: 'Delta Soluções',  color: 'orange' },
 ]
 
 const partners = [
-  { name: 'Banco de Alimentos SP', emoji: '🥫', type: 'Parceiro' },
-  { name: 'Prefeitura de SP',      emoji: '🏛️', type: 'Governo'  },
-  { name: 'Igreja Matriz Centro',  emoji: '⛪', type: 'Parceiro' },
-  { name: 'SESC SP',               emoji: '🎭', type: 'Parceiro' },
-  { name: 'CRAS Central',          emoji: '🏥', type: 'Governo'  },
-  { name: 'Horta Viva',            emoji: '🌱', type: 'Parceiro' },
+  { name: 'Banco de Alimentos SP', type: 'Parceiro' },
+  { name: 'Prefeitura de SP',      type: 'Governo'  },
+  { name: 'Igreja Matriz Centro',  type: 'Parceiro' },
+  { name: 'SESC SP',               type: 'Parceiro' },
+  { name: 'CRAS Central',          type: 'Governo'  },
+  { name: 'Horta Viva',            type: 'Parceiro' },
 ]
 
 export default function Partners() {
@@ -32,7 +32,6 @@ export default function Partners() {
           <div className="partners__investors">
             {investors.map(i => (
               <div className={`partners__investor partners__investor--${i.color}`} key={i.name}>
-                <span>{i.emoji}</span>
                 <span>{i.name}</span>
               </div>
             ))}
@@ -44,7 +43,6 @@ export default function Partners() {
           <div className="partners__grid">
             {partners.map(p => (
               <div className="partners__card" key={p.name}>
-                <span className="partners__emoji">{p.emoji}</span>
                 <div>
                   <strong>{p.name}</strong>
                   <span className={`tag tag--${p.type === 'Governo' ? 'blue' : 'green'}`} style={{ marginLeft: '0.5rem', fontSize: '0.7rem' }}>{p.type}</span>

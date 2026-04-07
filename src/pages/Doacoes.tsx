@@ -1,10 +1,10 @@
 import './Doacoes.css'
 
 const donationOptions = [
-  { amount: 'R$ 25', desc: 'Custeia 5 marmitas', color: 'yellow', emoji: '🍱' },
-  { amount: 'R$ 50', desc: 'Custeia um kit de higiene completo', color: 'orange', emoji: '🧴' },
-  { amount: 'R$ 100', desc: 'Ajuda a equipar uma saída', color: 'green', emoji: '🎒' },
-  { amount: 'R$ 250', desc: 'Patrocina uma saída completa', color: 'blue', emoji: '🚗' },
+  { amount: 'R$ 25', desc: 'Custeia 5 marmitas', color: 'yellow' },
+  { amount: 'R$ 50', desc: 'Custeia um kit de higiene completo', color: 'orange' },
+  { amount: 'R$ 100', desc: 'Ajuda a equipar uma saída', color: 'green' },
+  { amount: 'R$ 250', desc: 'Patrocina uma saída completa', color: 'blue' },
 ]
 
 export default function Doacoes() {
@@ -14,7 +14,7 @@ export default function Doacoes() {
       <section className="don-hero">
         <div className="don-hero__bg" aria-hidden />
         <div className="container don-hero__content">
-          <span className="tag tag--orange">❤️ Doações</span>
+          <span className="tag tag--orange">Doações</span>
           <h1>Sua doação alimenta<br /><span className="don-highlight">vidas reais</span></h1>
           <p>Cada contribuição se transforma diretamente em marmitas quentes, kits de higiene e dignidade para quem mais precisa nas ruas.</p>
         </div>
@@ -32,7 +32,6 @@ export default function Doacoes() {
           <div className="don-options">
             {donationOptions.map(d => (
               <div className={`don-option don-option--${d.color}`} key={d.amount}>
-                <span className="don-option__emoji">{d.emoji}</span>
                 <strong className="don-option__amount">{d.amount}</strong>
                 <span className="don-option__desc">{d.desc}</span>
                 <button className={`btn btn--outline`} style={{ borderColor: `var(--clr-${d.color})`, color: `var(--clr-${d.color})` }}>
@@ -57,7 +56,7 @@ export default function Doacoes() {
               </p>
               <div className="don-transparency">
                 {['100% das doações vão às ações', 'Relatório anual público', 'CNPJ registrado', 'Nota fiscal disponível'].map(i => (
-                  <span key={i} className="don-trust"><span>✅</span> {i}</span>
+                  <span key={i} className="don-trust"> {i}</span>
                 ))}
               </div>
             </div>
@@ -99,13 +98,12 @@ export default function Doacoes() {
           </div>
           <div className="don-items">
             {[
-              { icon: '🥫', label: 'Alimentos não-perecíveis', color: 'yellow' },
-              { icon: '🧴', label: 'Produtos de higiene pessoal', color: 'blue' },
-              { icon: '👕', label: 'Roupas em bom estado', color: 'orange' },
-              { icon: '🧹', label: 'Itens de limpeza', color: 'green' },
+              { label: 'Alimentos não-perecíveis', color: 'yellow' },
+              { label: 'Produtos de higiene pessoal', color: 'blue' },
+              { label: 'Roupas em bom estado', color: 'orange' },
+              { label: 'Itens de limpeza', color: 'green' },
             ].map(i => (
               <div className={`don-item don-item--${i.color}`} key={i.label}>
-                <span>{i.icon}</span>
                 <span>{i.label}</span>
               </div>
             ))}
@@ -113,7 +111,7 @@ export default function Doacoes() {
           <div className="don-items-contact">
             <p>Para agendar a entrega de doações físicas, entre em contato via WhatsApp:</p>
             <a href="https://wa.me/5511999999999" target="_blank" rel="noreferrer" className="btn btn--orange">
-              📱 (11) 99999-9999
+              (11) 99999-9999
             </a>
           </div>
         </div>
