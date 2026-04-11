@@ -1,0 +1,118 @@
+/* Área admin — login + tabela de voluntários */
+
+.admin-login {
+  padding-top: 6rem;
+  padding-bottom: 4rem;
+  min-height: 60svh;
+  display: flex;
+  align-items: center;
+}
+
+.admin-login__box {
+  max-width: 420px;
+  margin-inline: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.admin-login__box h1 {
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.admin-login__hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.55;
+}
+
+.admin-login__hint strong {
+  color: var(--text, #e2e8f0);
+  font-weight: 600;
+}
+
+.admin-login__error {
+  margin: 0;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius);
+  background: rgba(220, 53, 69, 0.12);
+  border: 1px solid rgba(220, 53, 69, 0.35);
+  color: #f8a5a5;
+  font-size: 0.875rem;
+}
+
+.admin-dashboard {
+  padding-top: 6rem;
+  padding-bottom: 4rem;
+}
+
+.admin-dashboard__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-dashboard__head h1 {
+  font-size: clamp(1.35rem, 3vw, 1.85rem);
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.admin-table th {
+  background: var(--surface2);
+  color: var(--text-h);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tbody tr:hover td {
+  background: rgba(245, 200, 0, 0.04);
+}
+
+.admin-table__motivacao {
+  max-width: 280px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.admin-dashboard__status {
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.admin-dashboard__error {
+  color: #f8a5a5;
+  margin-bottom: 1rem;
+}

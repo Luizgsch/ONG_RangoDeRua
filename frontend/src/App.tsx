@@ -6,6 +6,7 @@ import Voluntario from './pages/Voluntario'
 import Doacoes from './pages/Doacoes'
 import Noticias from './pages/Noticias'
 import PoliticaPrivacidade from './pages/PoliticaPrivacidade'
+import Admin from './pages/Admin'
 
 export default function App() {
   return (
@@ -18,10 +19,10 @@ export default function App() {
           <Route path="/doacoes"             element={<Doacoes />} />
           <Route path="/noticias"            element={<Noticias />} />
           <Route path="/politica-privacidade" element={<PoliticaPrivacidade />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </main>
       <Footer />
     </BrowserRouter>
   )
-  // return (
 }

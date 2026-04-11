@@ -15,19 +15,64 @@ const faqs = [
   { q: 'E se eu quiser ajudar de outra forma?', a: 'Temos frentes de comunicação, captação, gestão e mais. Mencione no formulário seu interesse!' },
 ]
 
+const VOLUNTEERS_API = 'http://localhost:3333/api/volunteers'
+
 export default function Voluntario() {
   const [sent, setSent] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
-  const [form, setForm] = useState({ name: '', email: '', phone: '', city: '', age: '', availability: '', motivation: '' })
+  const [form, setForm] = useState({
+    nome: '',
+    idade: '',
+    email: '',
+    whatsApp: '',
+    localidade: '',
+    disponibilidade: '',
+    motivacao: '',
+  })
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     setForm(f => ({ ...f, [e.target.name]: e.target.value }))
+    setSubmitError(null)
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    // TODO: integrate with volunteer management system
-    setSent(true)
+    setSubmitError(null)
+    setSubmitting(true)
+    const body = {
+      nome: form.nome,
+      idade: Number(form.idade),
+      email: form.email,
+      whatsApp: form.whatsApp,
+      localidade: form.localidade,
+      disponibilidade: form.disponibilidade,
+      motivacao: form.motivacao,
+    }
+    try {
+      const res = await fetch(VOLUNTEERS_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      if (!res.ok) {
+        const text = await res.text()
+        let msg = text || `Erro ${res.status}`
+        try {
+          const j = JSON.parse(text) as { error?: string }
+          if (typeof j?.error === 'string' && j.error) msg = j.error
+        } catch {
+          /* manter msg */
+        }
+        throw new Error(msg)
+      }
+      setSent(true)
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Não foi possível enviar. Tente novamente.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -84,14 +129,19 @@ export default function Voluntario() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="vol-form">
+                  {submitError && (
+                    <p className="vol-form__error" role="alert">
+                      {submitError}
+                    </p>
+                  )}
                   <div className="grid-2" style={{ gap: '1rem' }}>
                     <div className="form-group">
                       <label htmlFor="v-name">Nome completo</label>
-                      <input id="v-name" name="name" type="text" placeholder="Seu nome" value={form.name} onChange={handleChange} required />
+                      <input id="v-name" name="nome" type="text" placeholder="Seu nome" value={form.nome} onChange={handleChange} required />
                     </div>
                     <div className="form-group">
                       <label htmlFor="v-age">Idade</label>
-                      <input id="v-age" name="age" type="number" placeholder="Ex: 25" min="16" max="99" value={form.age} onChange={handleChange} required />
+                      <input id="v-age" name="idade" type="number" placeholder="Ex: 25" min="16" max="99" value={form.idade} onChange={handleChange} required />
                     </div>
                   </div>
                   <div className="grid-2" style={{ gap: '1rem' }}>
@@ -101,31 +151,31 @@ export default function Voluntario() {
                     </div>
                     <div className="form-group">
                       <label htmlFor="v-phone">WhatsApp</label>
-                      <input id="v-phone" name="phone" type="tel" placeholder="(11) 99999-9999" value={form.phone} onChange={handleChange} required />
+                      <input id="v-phone" name="whatsApp" type="tel" placeholder="(11) 99999-9999" value={form.whatsApp} onChange={handleChange} required />
                     </div>
                   </div>
                   <div className="grid-2" style={{ gap: '1rem' }}>
                     <div className="form-group">
                       <label htmlFor="v-city">Cidade / Bairro</label>
-                      <input id="v-city" name="city" type="text" placeholder="Ex: São Paulo – Centro" value={form.city} onChange={handleChange} required />
+                      <input id="v-city" name="localidade" type="text" placeholder="Ex: São Paulo – Centro" value={form.localidade} onChange={handleChange} required />
                     </div>
                     <div className="form-group">
                       <label htmlFor="v-avail">Disponibilidade</label>
-                      <select id="v-avail" name="availability" value={form.availability} onChange={handleChange} required>
+                      <select id="v-avail" name="disponibilidade" value={form.disponibilidade} onChange={handleChange} required>
                         <option value="" disabled>Selecione</option>
-                        <option value="1x-mes">1x por mês</option>
-                        <option value="2x-mes">2x por mês (todas as saídas)</option>
-                        <option value="eventual">Eventual</option>
-                        <option value="remoto">Só online / remoto</option>
+                        <option value="ONCE_A_MONTH">1x por mês</option>
+                        <option value="TWICE_A_MONTH">2x por mês (todas as saídas)</option>
+                        <option value="EVENTUAL">Eventual</option>
+                        <option value="REMOTE">Só online / remoto</option>
                       </select>
                     </div>
                   </div>
                   <div className="form-group">
                     <label htmlFor="v-motivation">Por que quer ser voluntário?</label>
-                    <textarea id="v-motivation" name="motivation" placeholder="Conte um pouco sobre você e sua motivação..." value={form.motivation} onChange={handleChange} required />
+                    <textarea id="v-motivation" name="motivacao" placeholder="Conte um pouco sobre você e sua motivação..." value={form.motivacao} onChange={handleChange} required />
                   </div>
-                  <button type="submit" className="btn btn--primary btn--lg" style={{ width: '100%', justifyContent: 'center' }}>
-                    Enviar inscrição
+                  <button type="submit" className="btn btn--primary btn--lg" style={{ width: '100%', justifyContent: 'center' }} disabled={submitting}>
+                    {submitting ? 'Enviando…' : 'Enviar inscrição'}
                   </button>
                 </form>
               )}
