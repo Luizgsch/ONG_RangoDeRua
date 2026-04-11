@@ -18,9 +18,9 @@ export default function App() {
   }, [])
 
   return (
-    <BrowserRouter basename="/ONG_RangoDeRua">
+    <BrowserRouter>
       <Navbar />
-      <main>
+      <main className="app-main">
         <Routes>
           <Route path="/"                    element={<Home />} />
           <Route path="/voluntario"          element={<Voluntario />} />

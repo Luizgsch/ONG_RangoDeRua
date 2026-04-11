@@ -4,6 +4,7 @@
   z-index: 100;
   padding: 1.25rem 0;
   transition: background 0.3s, box-shadow 0.3s, padding 0.3s;
+  border-bottom: 1px solid transparent;
 }
 
 .navbar--scrolled {
@@ -11,6 +12,7 @@
   backdrop-filter: blur(12px);
   box-shadow: 0 2px 20px rgba(0,0,0,0.4);
   padding: 0.75rem 0;
+  border-bottom-color: rgba(245, 200, 0, 0.08);
 }
 
 .navbar__inner {
