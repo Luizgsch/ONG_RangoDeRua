@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { VOLUNTEERS_ENDPOINT } from '../config/api'
 import './Voluntario.css'
 
 const steps = [
@@ -15,22 +16,22 @@ const faqs = [
   { q: 'E se eu quiser ajudar de outra forma?', a: 'Temos frentes de comunicação, captação, gestão e mais. Mencione no formulário seu interesse!' },
 ]
 
-const VOLUNTEERS_API = 'http://localhost:3333/api/volunteers'
+const emptyForm = {
+  nome: '',
+  idade: '',
+  email: '',
+  whatsApp: '',
+  localidade: '',
+  disponibilidade: '',
+  motivacao: '',
+}
 
 export default function Voluntario() {
   const [sent, setSent] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
-  const [form, setForm] = useState({
-    nome: '',
-    idade: '',
-    email: '',
-    whatsApp: '',
-    localidade: '',
-    disponibilidade: '',
-    motivacao: '',
-  })
+  const [form, setForm] = useState({ ...emptyForm })
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     setForm(f => ({ ...f, [e.target.name]: e.target.value }))
@@ -51,7 +52,7 @@ export default function Voluntario() {
       motivacao: form.motivacao,
     }
     try {
-      const res = await fetch(VOLUNTEERS_API, {
+      const res = await fetch(VOLUNTEERS_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -67,6 +68,7 @@ export default function Voluntario() {
         }
         throw new Error(msg)
       }
+      setForm({ ...emptyForm })
       setSent(true)
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Não foi possível enviar. Tente novamente.')
@@ -82,7 +84,10 @@ export default function Voluntario() {
         <div className="vol-hero__bg" aria-hidden />
         <div className="container vol-hero__content">
           <span className="tag tag--yellow">Voluntariado</span>
-          <h1>Faça parte do<br /><span className="hero__highlight">Rango de Rua</span></h1>
+          <h1>
+            Faça parte do<br />
+            <span className="hero__highlight">Rango de Rua</span>
+          </h1>
           <p>Junte-se a mais de 200 voluntários que já transformaram vidas. É gratuito, é formativo, é amor em ação.</p>
         </div>
       </section>
@@ -116,14 +121,19 @@ export default function Voluntario() {
               <p>Preencha o formulário e nossa equipe entrará em contato para dar os próximos passos.</p>
               <div className="vol-highlights">
                 {['100% gratuito', 'Formação incluída', 'Flexibilidade de horário', 'Comunidade incrível'].map(h => (
-                  <div key={h} className="vol-highlight"> {h}</div>
+                  <div key={h} className="vol-highlight">
+                    {h}
+                  </div>
                 ))}
               </div>
             </div>
 
             <div className="vol-form-box">
               {sent ? (
-                <div className="contact__success">
+                <div className="vol-form__success" role="status">
+                  <span className="vol-form__success-icon" aria-hidden>
+                    ✓
+                  </span>
                   <h3>Incrível! Inscrição recebida!</h3>
                   <p>Obrigado! Nossa equipe vai entrar em contato em até 5 dias úteis.</p>
                 </div>
@@ -162,7 +172,9 @@ export default function Voluntario() {
                     <div className="form-group">
                       <label htmlFor="v-avail">Disponibilidade</label>
                       <select id="v-avail" name="disponibilidade" value={form.disponibilidade} onChange={handleChange} required>
-                        <option value="" disabled>Selecione</option>
+                        <option value="" disabled>
+                          Selecione
+                        </option>
                         <option value="ONCE_A_MONTH">1x por mês</option>
                         <option value="TWICE_A_MONTH">2x por mês (todas as saídas)</option>
                         <option value="EVENTUAL">Eventual</option>
@@ -174,9 +186,21 @@ export default function Voluntario() {
                     <label htmlFor="v-motivation">Por que quer ser voluntário?</label>
                     <textarea id="v-motivation" name="motivacao" placeholder="Conte um pouco sobre você e sua motivação..." value={form.motivacao} onChange={handleChange} required />
                   </div>
-                  <button type="submit" className="btn btn--primary btn--lg" style={{ width: '100%', justifyContent: 'center' }} disabled={submitting}>
-                    {submitting ? 'Enviando…' : 'Enviar inscrição'}
+                  <button
+                    type="submit"
+                    className="btn btn--primary btn--lg vol-form__submit"
+                    disabled={submitting}
+                    aria-busy={submitting}
+                  >
+                    {submitting && <span className="vol-form__spinner" aria-hidden />}
+                    {submitting ? 'Enviando cadastro…' : 'Enviar inscrição'}
                   </button>
+                  {submitting && (
+                    <p className="vol-form__cold-start-hint">
+                      O primeiro envio do dia pode demorar cerca de 30 segundos enquanto nosso servidor inicializa. Obrigado pela
+                      paciência!
+                    </p>
+                  )}
                 </form>
               )}
             </div>

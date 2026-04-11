@@ -45,11 +45,19 @@ export async function buildApp(swaggerOptions?: SwaggerPluginOptions) {
     },
   })
 
+  const defaultOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173']
+  const extraOrigins =
+    process.env.CORS_ORIGIN?.split(',')
+      .map(s => s.trim())
+      .filter(Boolean) ?? []
+
   await app.register(cors, {
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: [...defaultOrigins, ...extraOrigins],
     methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
+
+  app.get('/health', async () => ({ ok: true as const, service: 'rango-de-rua-api' }))
 
   await app.register(volunteerRoutes)
 

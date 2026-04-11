@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { API_BASE } from '../config/api'
 import './Admin.css'
 
 const AUTH_JWT_KEY = 'rango_admin_jwt'
-
-const API_BASE = 'http://localhost:3333'
 
 export type VolunteerDto = {
   id: string

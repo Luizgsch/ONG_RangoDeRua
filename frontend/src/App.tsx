@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -7,8 +8,15 @@ import Doacoes from './pages/Doacoes'
 import Noticias from './pages/Noticias'
 import PoliticaPrivacidade from './pages/PoliticaPrivacidade'
 import Admin from './pages/Admin'
+import { HEALTH_ENDPOINT } from './config/api'
 
 export default function App() {
+  useEffect(() => {
+    void fetch(HEALTH_ENDPOINT, { method: 'GET', mode: 'cors' }).catch(() => {
+      /* cold start / offline — ignorado; objetivo é só acordar o host (ex.: Render free) */
+    })
+  }, [])
+
   return (
     <BrowserRouter basename="/ONG_RangoDeRua">
       <Navbar />
