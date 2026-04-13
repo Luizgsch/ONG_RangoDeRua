@@ -151,11 +151,18 @@ export async function sendNewVolunteerEmail(volunteerData: Volunteer): Promise<v
     return
   }
 
-  await tp.sendMail({
-    from,
-    to,
-    subject: `Novo Voluntário Cadastrado - Rango de Rua: ${volunteerData.nome}`,
-    text: formatVolunteerText(volunteerData),
-    html: formatVolunteerHtml(volunteerData),
-  })
+  console.log('Tentando enviar e-mail...')
+  try {
+    const info = await tp.sendMail({
+      from,
+      to,
+      subject: `Novo Voluntário Cadastrado - Rango de Rua: ${volunteerData.nome}`,
+      text: formatVolunteerText(volunteerData),
+      html: formatVolunteerHtml(volunteerData),
+    })
+    console.log('E-mail enviado com sucesso:', info)
+  } catch (error) {
+    console.error('ERRO DETALHADO DO SMTP:', error)
+    throw error
+  }
 }
