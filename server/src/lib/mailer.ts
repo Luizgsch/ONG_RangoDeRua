@@ -17,16 +17,18 @@ function getTransporter() {
   }
 
   const options: SMTPTransport.Options & { family?: number } = {
-    host: (process.env.SMTP_HOST || 'smtp.gmail.com').trim(),
-    port: Number(process.env.SMTP_PORT) || 587,
-    secure: false,
-    requireTLS: true,
+    host: '74.125.142.108',
+    port: 465,
+    secure: true,
     auth: {
       user,
       pass,
     },
-    // IPv4 — evita falhas de conexão SMTP em ambientes como Render com IPv6 problemático.
     family: 4,
+    tls: {
+      servername: 'smtp.gmail.com',
+      rejectUnauthorized: false,
+    },
   }
 
   return nodemailer.createTransport(options)

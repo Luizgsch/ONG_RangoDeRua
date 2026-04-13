@@ -1,3 +1,4 @@
+import './server.js'
 import 'dotenv/config'
 import { buildApp } from './app.js'
 
