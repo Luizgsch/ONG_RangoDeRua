@@ -2,7 +2,7 @@ import type { FastifyPluginAsync } from 'fastify'
 import rateLimit from '@fastify/rate-limit'
 import { Prisma } from '@prisma/client'
 import fp from 'fastify-plugin'
-import { sendNewVolunteerEmail } from '../lib/mailer.js'
+import { Resend } from 'resend'
 import { prisma } from '../lib/prisma.js'
 import { createVolunteerSchema, formatZodIssues } from '../schemas/volunteerCreate.js'
 
@@ -192,12 +192,36 @@ const volunteerPlugin: FastifyPluginAsync = async app => {
           },
         })
 
-        await sendNewVolunteerEmail(volunteer)
-
-        return reply.status(201).send(volunteer)
+        reply.status(201).send(volunteer)
+        setImmediate(() => {
+          void (async () => {
+            const apiKey = process.env.RESEND_API_KEY?.trim()
+            if (!apiKey || !process.env.BOSS_EMAIL?.trim()) {
+              console.warn('[resend] Envio ignorado: defina RESEND_API_KEY e BOSS_EMAIL no .env')
+              return
+            }
+            try {
+              const resend = new Resend(apiKey)
+              const { data, error } = await resend.emails.send({
+                from: 'Rango de Rua <onboarding@resend.dev>',
+                to: process.env.BOSS_EMAIL,
+                subject: 'Novo Voluntário Cadastrado!',
+                html: `<p>Um novo voluntário se inscreveu: ${volunteer.nome}</p>`,
+              })
+              if (error) {
+                console.error('[resend] Erro da API:', error)
+                return
+              }
+              console.log('[resend] Resposta:', data)
+            } catch (err) {
+              console.error('[resend] Exceção ao enviar:', err)
+            }
+          })()
+        })
+        return reply
       } catch (err) {
-        log.error({ err }, 'Erro ao cadastrar voluntário ou ao enviar e-mail (SMTP)')
-        console.error('Falha no POST /api/volunteers (cadastro/e-mail):', err)
+        log.error({ err }, 'Erro inesperado ao cadastrar voluntário')
+        console.error('Falha no POST /api/volunteers:', err)
         return reply.status(500).send({
           error: 'Não foi possível concluir o cadastro. Tente novamente mais tarde.',
         })
