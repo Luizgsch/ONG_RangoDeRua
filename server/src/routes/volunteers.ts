@@ -56,13 +56,15 @@ const rateLimitErrorSchema = {
   },
 } as const
 
-/** Escopo encapsulado: JWT em todas as rotas registradas aqui (não inclui POST /api/volunteers). */
-const volunteersAuthScoped: FastifyPluginAsync = async scope => {
-  scope.addHook('onRequest', scope.authenticate)
-
+/**
+ * Listagem e exclusão com JWT via `preHandler` em cada rota.
+ * POST /api/volunteers permanece no plugin pai (fora deste bloco).
+ */
+const volunteersListAndDeleteScoped: FastifyPluginAsync = async scope => {
   scope.get(
     '/api/volunteers',
     {
+      preHandler: [scope.authenticate],
       schema: {
         tags: ['Voluntários'],
         summary: 'Listar voluntários',
@@ -89,6 +91,7 @@ const volunteersAuthScoped: FastifyPluginAsync = async scope => {
   scope.delete(
     '/api/volunteers/:id',
     {
+      preHandler: [scope.authenticate],
       schema: {
         tags: ['Voluntários'],
         summary: 'Excluir voluntário',
@@ -130,7 +133,7 @@ const volunteersAuthScoped: FastifyPluginAsync = async scope => {
 const volunteerPlugin: FastifyPluginAsync = async app => {
   await app.register(rateLimit, { global: false })
 
-  // Fora do escopo `volunteersAuthScoped`: cadastro público.
+  // Fora de `volunteersListAndDeleteScoped`: cadastro público (sem JWT).
   app.post(
     '/api/volunteers',
     {
@@ -144,7 +147,7 @@ const volunteerPlugin: FastifyPluginAsync = async app => {
         tags: ['Voluntários'],
         summary: 'Cadastrar voluntário',
         description:
-          'Rota pública (fora do escopo com JWT): não exige Bearer. Cria um novo voluntário; o corpo é validado com Zod (nome ≥3 caracteres, e-mail e telefone válidos, etc.). Limite: 10 requisições por minuto por IP.',
+          'Totalmente pública: sem preHandler/onRequest de JWT nesta rota. Cria um voluntário; corpo validado com Zod. Limite: 10 req/min por IP.',
         security: [],
         body: {
           type: 'object',
@@ -203,7 +206,7 @@ const volunteerPlugin: FastifyPluginAsync = async app => {
     },
   )
 
-  await app.register(volunteersAuthScoped)
+  await app.register(volunteersListAndDeleteScoped)
 }
 
 export const volunteerRoutes = fp(volunteerPlugin, {

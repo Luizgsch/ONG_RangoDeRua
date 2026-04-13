@@ -27,7 +27,10 @@ const jwtAuthPlugin: FastifyPluginAsync = async fastify => {
     sign: { expiresIn: '7d' },
   })
 
-  /** Middleware: exige Bearer JWT válido; caso contrário 401 Unauthorized. */
+  /**
+   * Não usa addHook('preHandler') global — só expõe o verificador para rotas que
+   * passarem `preHandler: [app.authenticate]` (ou equivalente) explicitamente.
+   */
   fastify.decorate('authenticate', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       await request.jwtVerify()
