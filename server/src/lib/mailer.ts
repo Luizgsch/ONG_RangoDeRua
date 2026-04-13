@@ -18,8 +18,9 @@ function getTransporter() {
 
   const options: SMTPTransport.Options & { family?: number } = {
     host: (process.env.SMTP_HOST || 'smtp.gmail.com').trim(),
-    port: Number(process.env.SMTP_PORT) || 465,
-    secure: true,
+    port: Number(process.env.SMTP_PORT) || 587,
+    secure: false,
+    requireTLS: true,
     auth: {
       user,
       pass,
