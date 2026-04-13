@@ -207,8 +207,27 @@ const volunteerPlugin: FastifyPluginAsync = async app => {
               const { data, error } = await resend.emails.send({
                 from: 'Rango de Rua <onboarding@resend.dev>',
                 to: process.env.BOSS_EMAIL,
-                subject: 'Novo Voluntário Cadastrado!',
-                html: `<p>Um novo voluntário se inscreveu: ${volunteer.nome}</p>`,
+                subject: '🚀 Novo Voluntário: ' + volunteer.nome,
+                html: `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
+      <div style="background-color: #f87171; padding: 20px; text-align: center;">
+        <h1 style="color: white; margin: 0; font-size: 24px;">Novo Voluntário Cadastrado!</h1>
+      </div>
+      <div style="padding: 20px; color: #333;">
+        <p>Olá, Admin. Temos um novo interessado em ajudar no <strong>Rango de Rua</strong>:</p>
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+        <p><strong>Nome:</strong> ${volunteer.nome}</p>
+        <p><strong>E-mail:</strong> ${volunteer.email}</p>
+        <p><strong>Telefone:</strong> ${volunteer.whatsApp?.trim() || 'Não informado'}</p>
+        <div style="background-color: #f9fafb; padding: 15px; border-radius: 5px; margin-top: 20px;">
+          <p style="margin: 0; font-style: italic;">"Verifique os detalhes completos no painel administrativo."</p>
+        </div>
+      </div>
+      <div style="background-color: #f3f4f6; padding: 10px; text-align: center; font-size: 12px; color: #666;">
+        Este é um e-mail automático enviado pelo Sistema Rango de Rua.
+      </div>
+    </div>
+  `,
               })
               if (error) {
                 console.error('ERRO CRÍTICO RESEND:', error)
