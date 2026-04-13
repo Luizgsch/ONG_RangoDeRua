@@ -36,3 +36,14 @@ model User {
 
   @@map("users")
 }
+
+/// Cache do feed (preenchido pelo job / rota de sync; o site só lê via GET /api/instagram-cache).
+model InstagramPost {
+  id        String   @id
+  imageUrl  String   @map("image_url")
+  permalink String
+  caption   String?  @db.Text
+  createdAt DateTime @map("created_at")
+
+  @@map("instagram_posts")
+}
