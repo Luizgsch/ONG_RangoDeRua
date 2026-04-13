@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer'
+import type SMTPTransport from 'nodemailer/lib/smtp-transport/index.js'
 import type { Availability, Volunteer } from '@prisma/client'
 
 const AVAILABILITY_LABEL: Record<Availability, string> = {
@@ -9,23 +10,25 @@ const AVAILABILITY_LABEL: Record<Availability, string> = {
 }
 
 function getTransporter() {
-  const host = process.env.SMTP_HOST
-  const user = process.env.SMTP_USER
+  const user = process.env.SMTP_USER?.trim()
   const pass = process.env.SMTP_PASS
-  if (!host?.trim() || !user?.trim() || !pass?.trim()) {
+  if (!user || !pass?.trim()) {
     return null
   }
 
-  const port = Number(process.env.SMTP_PORT) || 587
-  const secure =
-    process.env.SMTP_SECURE === 'true' || process.env.SMTP_SECURE === '1' || port === 465
+  const options: SMTPTransport.Options & { family?: number } = {
+    host: (process.env.SMTP_HOST || 'smtp.gmail.com').trim(),
+    port: Number(process.env.SMTP_PORT) || 465,
+    secure: true,
+    auth: {
+      user,
+      pass,
+    },
+    // IPv4 — evita falhas de conexão SMTP em ambientes como Render com IPv6 problemático.
+    family: 4,
+  }
 
-  return nodemailer.createTransport({
-    host: host.trim(),
-    port,
-    secure,
-    auth: { user: user.trim(), pass },
-  })
+  return nodemailer.createTransport(options)
 }
 
 let transporterCache: ReturnType<typeof nodemailer.createTransport> | null | undefined

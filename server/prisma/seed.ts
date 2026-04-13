@@ -1,3 +1,13 @@
+/**
+ * Cria ou atualiza o usuário administrador (tabela `users`).
+ *
+ * Variáveis (.env):
+ *   - DATABASE_URL — conexão PostgreSQL (ex.: Neon)
+ *   - ADMIN_EMAIL — e-mail do admin (único)
+ *   - ADMIN_PASSWORD — senha em texto puro no .env só para este seed; no banco vai bcrypt (src/lib/password.ts)
+ *
+ * Rodar: na pasta `server`, `npm run db:seed` (ou `npx prisma db seed`).
+ */
 import 'dotenv/config'
 import { hashPassword } from '../src/lib/password.js'
 import { prisma } from '../src/lib/prisma.js'
@@ -7,20 +17,22 @@ async function main() {
   const password = process.env.ADMIN_PASSWORD
 
   if (!email || !password) {
-    console.warn(
-      'Defina ADMIN_EMAIL e ADMIN_PASSWORD no .env (veja .env.example). Seed de administrador ignorado.',
+    throw new Error(
+      'Configure ADMIN_EMAIL e ADMIN_PASSWORD no .env (veja .env.example). Seed abortado.',
     )
-    return
   }
 
   const hashed = await hashPassword(password)
+
   await prisma.user.upsert({
     where: { email },
     create: { email, password: hashed },
     update: { password: hashed },
   })
 
-  console.log(`Administrador criado/atualizado: ${email} (login em /admin com este e-mail e a senha do .env).`)
+  console.log(
+    `Administrador criado/atualizado: ${email} (use esta senha no .env para login em /admin via POST /api/login).`,
+  )
 }
 
 main()
