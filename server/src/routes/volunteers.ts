@@ -1,5 +1,6 @@
 import type { FastifyPluginAsync } from 'fastify'
 import rateLimit from '@fastify/rate-limit'
+import { Prisma } from '@prisma/client'
 import fp from 'fastify-plugin'
 import { sendNewVolunteerEmail } from '../lib/mailer.js'
 import { prisma } from '../lib/prisma.js'
@@ -55,13 +56,13 @@ const rateLimitErrorSchema = {
   },
 } as const
 
-const volunteerPlugin: FastifyPluginAsync = async app => {
-  await app.register(rateLimit, { global: false })
+/** Escopo encapsulado: JWT em todas as rotas registradas aqui (não inclui POST /api/volunteers). */
+const volunteersAuthScoped: FastifyPluginAsync = async scope => {
+  scope.addHook('onRequest', scope.authenticate)
 
-  app.get(
+  scope.get(
     '/api/volunteers',
     {
-      onRequest: [app.authenticate],
       schema: {
         tags: ['Voluntários'],
         summary: 'Listar voluntários',
@@ -85,6 +86,51 @@ const volunteerPlugin: FastifyPluginAsync = async app => {
     },
   )
 
+  scope.delete(
+    '/api/volunteers/:id',
+    {
+      schema: {
+        tags: ['Voluntários'],
+        summary: 'Excluir voluntário',
+        description:
+          'Remove um voluntário pelo id (UUID). Requer Authorization: Bearer com JWT obtido em POST /api/login.',
+        security: [{ bearerAuth: [] }],
+        params: {
+          type: 'object',
+          required: ['id'],
+          properties: { id: { type: 'string', format: 'uuid' } },
+        },
+        response: {
+          204: { type: 'null', description: 'Removido com sucesso.' },
+          401: errorBodySchema,
+          404: errorBodySchema,
+          500: errorBodySchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params as { id: string }
+      try {
+        await prisma.volunteer.delete({ where: { id } })
+      } catch (err) {
+        if (
+          err instanceof Prisma.PrismaClientKnownRequestError &&
+          err.code === 'P2025'
+        ) {
+          return reply.status(404).send({ error: 'Voluntário não encontrado.' })
+        }
+        request.log.error({ err }, 'Erro ao excluir voluntário')
+        return reply.status(500).send({ error: 'Não foi possível excluir o voluntário.' })
+      }
+      return reply.status(204).send()
+    },
+  )
+}
+
+const volunteerPlugin: FastifyPluginAsync = async app => {
+  await app.register(rateLimit, { global: false })
+
+  // Fora do escopo `volunteersAuthScoped`: cadastro público.
   app.post(
     '/api/volunteers',
     {
@@ -98,7 +144,8 @@ const volunteerPlugin: FastifyPluginAsync = async app => {
         tags: ['Voluntários'],
         summary: 'Cadastrar voluntário',
         description:
-          'Cria um novo voluntário. O corpo é validado com Zod (nome ≥3 caracteres, e-mail e telefone válidos, etc.). Limite: 10 requisições por minuto por IP.',
+          'Rota pública (fora do escopo com JWT): não exige Bearer. Cria um novo voluntário; o corpo é validado com Zod (nome ≥3 caracteres, e-mail e telefone válidos, etc.). Limite: 10 requisições por minuto por IP.',
+        security: [],
         body: {
           type: 'object',
           additionalProperties: true,
@@ -155,6 +202,8 @@ const volunteerPlugin: FastifyPluginAsync = async app => {
       }
     },
   )
+
+  await app.register(volunteersAuthScoped)
 }
 
 export const volunteerRoutes = fp(volunteerPlugin, {

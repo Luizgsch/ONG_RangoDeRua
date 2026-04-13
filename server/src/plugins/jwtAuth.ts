@@ -43,7 +43,7 @@ const jwtAuthPlugin: FastifyPluginAsync = async fastify => {
         tags: ['Autenticação'],
         summary: 'Login administrativo',
         description:
-          'Valida e-mail e senha (bcrypt) e retorna JWT. Use Authorization: Bearer no GET /api/volunteers.',
+          'Valida e-mail e senha (bcrypt) e retorna JWT. Use Authorization: Bearer no GET e no DELETE /api/volunteers.',
         body: {
           type: 'object',
           required: ['email', 'password'],
