@@ -160,7 +160,7 @@ export async function sendNewVolunteerEmail(volunteerData: Volunteer): Promise<v
       text: formatVolunteerText(volunteerData),
       html: formatVolunteerHtml(volunteerData),
     })
-    console.log('E-mail enviado com sucesso:', info)
+    console.log('Resposta do SMTP:', info)
   } catch (error) {
     console.error('ERRO DETALHADO DO SMTP:', error)
     throw error

@@ -192,13 +192,12 @@ const volunteerPlugin: FastifyPluginAsync = async app => {
           },
         })
 
-        void sendNewVolunteerEmail(volunteer).catch(err => {
-          log.error({ err }, 'Falha ao enviar e-mail de novo voluntário')
-        })
+        await sendNewVolunteerEmail(volunteer)
 
         return reply.status(201).send(volunteer)
       } catch (err) {
-        log.error({ err }, 'Erro inesperado ao cadastrar voluntário')
+        log.error({ err }, 'Erro ao cadastrar voluntário ou ao enviar e-mail (SMTP)')
+        console.error('Falha no POST /api/volunteers (cadastro/e-mail):', err)
         return reply.status(500).send({
           error: 'Não foi possível concluir o cadastro. Tente novamente mais tarde.',
         })
