@@ -195,6 +195,7 @@ const volunteerPlugin: FastifyPluginAsync = async app => {
         reply.status(201).send(volunteer)
         setImmediate(() => {
           void (async () => {
+            console.log('API KEY USADA:', process.env.RESEND_API_KEY ? 'OK' : 'VAZIA')
             const apiKey = process.env.RESEND_API_KEY?.trim()
             if (!apiKey || !process.env.BOSS_EMAIL?.trim()) {
               console.warn('[resend] Envio ignorado: defina RESEND_API_KEY e BOSS_EMAIL no .env')
@@ -202,6 +203,7 @@ const volunteerPlugin: FastifyPluginAsync = async app => {
             }
             try {
               const resend = new Resend(apiKey)
+              console.log('TENTANDO ENVIAR VIA RESEND...')
               const { data, error } = await resend.emails.send({
                 from: 'Rango de Rua <onboarding@resend.dev>',
                 to: process.env.BOSS_EMAIL,
@@ -209,12 +211,12 @@ const volunteerPlugin: FastifyPluginAsync = async app => {
                 html: `<p>Um novo voluntário se inscreveu: ${volunteer.nome}</p>`,
               })
               if (error) {
-                console.error('[resend] Erro da API:', error)
+                console.error('ERRO CRÍTICO RESEND:', error)
                 return
               }
               console.log('[resend] Resposta:', data)
             } catch (err) {
-              console.error('[resend] Exceção ao enviar:', err)
+              console.error('ERRO CRÍTICO RESEND:', err)
             }
           })()
         })
