@@ -1,5 +1,6 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
+import type { FastifyCorsOptions } from '@fastify/cors'
 import helmet from '@fastify/helmet'
 import swagger from '@fastify/swagger'
 import swaggerUi from '@fastify/swagger-ui'
@@ -7,6 +8,9 @@ import jwtAuth from './plugins/jwtAuth.js'
 import { volunteerRoutes } from './routes/volunteers.js'
 
 type SwaggerPluginOptions = NonNullable<Parameters<typeof swagger>[1]>
+
+/** Domínio principal da ONG + www (CORS em produção; amplie com CORS_ORIGIN no .env). */
+const DEFAULT_ONG_CORS_ORIGINS = ['https://rangoderua.org.br', 'https://www.rangoderua.org.br'] as const
 
 /** Lê CORS_ORIGIN: lista separada por vírgula, trim e aspas externas opcionais por item. */
 function parseCorsOriginsFromEnv(raw: string | undefined): string[] {
@@ -26,6 +30,64 @@ function parseCorsOriginsFromEnv(raw: string | undefined): string[] {
       return s
     })
     .filter(Boolean)
+}
+
+function normalizeOriginUrl(origin: string): string {
+  return origin.trim().replace(/\/$/, '')
+}
+
+/** Preview / deploy na Vercel: só hostname que termina em `.vercel.app` (evita match por substring). */
+function isVercelAppOrigin(origin: string): boolean {
+  try {
+    const { protocol, hostname } = new URL(origin)
+    if (protocol !== 'https:' && protocol !== 'http:') return false
+    return hostname === 'vercel.app' || hostname.endsWith('.vercel.app')
+  } catch {
+    return false
+  }
+}
+
+function mergeCorsAllowlist(envOrigins: string[]): string[] {
+  const set = new Set<string>()
+  for (const o of DEFAULT_ONG_CORS_ORIGINS) {
+    set.add(normalizeOriginUrl(o))
+  }
+  for (const o of envOrigins) {
+    set.add(normalizeOriginUrl(o))
+  }
+  return [...set]
+}
+
+function buildCorsOriginOption(isProd: boolean): FastifyCorsOptions['origin'] {
+  const fromEnv = parseCorsOriginsFromEnv(process.env.CORS_ORIGIN)
+
+  if (!isProd) {
+    if (fromEnv.length === 0) {
+      return '*'
+    }
+    if (fromEnv.length === 1) {
+      return normalizeOriginUrl(fromEnv[0]!)
+    }
+    return fromEnv.map(normalizeOriginUrl)
+  }
+
+  const allowlist = mergeCorsAllowlist(fromEnv)
+  return (origin, cb) => {
+    if (!origin) {
+      cb(null, true)
+      return
+    }
+    const normalized = normalizeOriginUrl(origin)
+    if (allowlist.includes(normalized)) {
+      cb(null, true)
+      return
+    }
+    if (isVercelAppOrigin(origin)) {
+      cb(null, true)
+      return
+    }
+    cb(new Error('Origem não permitida pelo CORS'), false)
+  }
 }
 
 const defaultSwaggerOptions: SwaggerPluginOptions = {
@@ -65,17 +127,8 @@ export async function buildApp(swaggerOptions?: SwaggerPluginOptions) {
     },
   })
 
-  const allowedOrigins = parseCorsOriginsFromEnv(process.env.CORS_ORIGIN)
-
-  const isDev = process.env.NODE_ENV !== 'production'
-  const corsOriginOption =
-    allowedOrigins.length > 0
-      ? allowedOrigins.length === 1
-        ? allowedOrigins[0]
-        : allowedOrigins
-      : isDev
-        ? '*'
-        : false
+  const isProd = process.env.NODE_ENV === 'production'
+  const corsOriginOption = buildCorsOriginOption(isProd)
 
   await app.register(cors, {
     origin: corsOriginOption,
