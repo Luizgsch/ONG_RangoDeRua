@@ -6,10 +6,10 @@
     "lib": ["ES2022"],
     "strict": true,
     "skipLibCheck": true,
-    "outDir": "dist",
+    "outDir": "./dist",
     "rootDir": "src",
-    "declaration": true,
-    "noEmit": true
+    "declaration": false,
+    "noEmit": false
   },
   "include": ["src/**/*.ts"]
 }
