@@ -14,4 +14,6 @@ export const API_BASE = resolvedBase.replace(/\/$/, '')
 
 export const VOLUNTEERS_ENDPOINT = `${API_BASE}/api/volunteers`
 
+export const INSTAGRAM_CACHE_ENDPOINT = `${API_BASE}/api/instagram-cache`
+
 export const HEALTH_ENDPOINT = `${API_BASE}/health`

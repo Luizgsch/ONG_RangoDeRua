@@ -1,26 +1,87 @@
-import './InstagramFeed.css'
+import { useEffect, useState } from 'react'
+import { INSTAGRAM_CACHE_ENDPOINT } from '../config/api'
 
-// Placeholder posts – will be replaced with real Instagram API integration
-const posts = [
-  { id: 1, emoji: '🍱', caption: 'Mais uma saída incrível! 50 marmitas entregues no centro de Curitiba com muito amor ❤️', likes: 342, color: 'yellow' },
-  { id: 2, emoji: '🤝', caption: 'Novos voluntários chegando! Bem-vindos à família Rango de Rua 🙌', likes: 218, color: 'orange' },
-  { id: 3, emoji: '🌱', caption: 'Parceria com a Horta Viva: ingredientes frescos nas nossas marmitas 🥦', likes: 195, color: 'green' },
-  { id: 4, emoji: '📦', caption: 'Arrecadação do Mutirão do Bem: 200kg de alimentos recolhidos! 📦', likes: 401, color: 'blue' },
-  { id: 5, emoji: '🎓', caption: 'Formação de voluntários: aprendendo a abordar com empatia e respeito 💛', likes: 287, color: 'purple' },
-  { id: 6, emoji: '❤️', caption: 'A recompensa de cada saída é o sorriso de quem recebe. Obrigado a todos!', likes: 524, color: 'pink' },
-]
+const INSTAGRAM_PROFILE = 'https://www.instagram.com/rangoderua'
+
+type InstagramCachePost = {
+  id: string
+  imageUrl: string
+  permalink: string
+  caption: string | null
+  createdAt: string
+}
+
+/** Padrão Bento: alterna células 1×1, destaques 2×2 e faixas 2×1 / 1×2 */
+const BENTO_CELL_CLASSES = [
+  'col-span-2 row-span-2',
+  'col-span-1 row-span-1',
+  'col-span-1 row-span-1',
+  'col-span-1 row-span-1',
+  'col-span-1 row-span-1',
+  'col-span-2 row-span-1',
+  'col-span-1 row-span-2',
+  'col-span-1 row-span-1',
+] as const
+
+function bentoClassAt(index: number): string {
+  return BENTO_CELL_CLASSES[index % BENTO_CELL_CLASSES.length]!
+}
+
+const SKELETON_COUNT = 8
 
 export default function InstagramFeed() {
+  const [posts, setPosts] = useState<InstagramCachePost[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch(INSTAGRAM_CACHE_ENDPOINT)
+        if (!res.ok) {
+          throw new Error(`Erro ${res.status}`)
+        }
+        const data = (await res.json()) as InstagramCachePost[]
+        if (!cancelled) {
+          setPosts(Array.isArray(data) ? data : [])
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setError(e instanceof Error ? e.message : 'Não foi possível carregar o feed.')
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   return (
     <section id="instagram" className="section section--dark">
       <div className="container">
         <div className="section-header">
           <span className="tag tag--pink">Redes sociais</span>
           <h2>
-            <svg className="ig-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '0.5rem', color: 'var(--clr-pink)' }}>
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-              <circle cx="12" cy="12" r="4"/>
-              <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
+            <svg
+              className="ig-icon"
+              viewBox="0 0 24 24"
+              width="28"
+              height="28"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ verticalAlign: 'middle', marginRight: '0.5rem', color: 'var(--clr-pink)' }}
+            >
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+              <circle cx="12" cy="12" r="4" />
+              <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
             </svg>
             Nos siga no Instagram
           </h2>
@@ -28,37 +89,119 @@ export default function InstagramFeed() {
           <p>Acompanhe nossas ações, histórias e saídas em tempo real.</p>
         </div>
 
-        <div className="instagram__grid">
-          {posts.map(p => (
-            <a
-              key={p.id}
-              href="https://www.instagram.com/rangoderua"
-              target="_blank"
-              rel="noreferrer"
-              className={`instagram__post instagram__post--${p.color}`}
-            >
-              <div className={`instagram__thumb instagram__thumb--${p.color}`}>
-                <span>{p.emoji}</span>
-              </div>
-              <div className="instagram__info">
-                <p>{p.caption}</p>
-                <span className="instagram__likes">❤️ {p.likes}</span>
-              </div>
-            </a>
-          ))}
-        </div>
-
-        <div className="instagram__cta">
-          <a
-            href="https://www.instagram.com/rangoderua"
-            target="_blank"
-            rel="noreferrer"
-            className="btn btn--outline"
+        {loading && (
+          <div
+            className="grid grid-cols-2 auto-rows-fr gap-3 sm:gap-4 md:grid-cols-4"
+            role="status"
+            aria-busy="true"
+            aria-label="Carregando publicações do Instagram"
           >
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-              <circle cx="12" cy="12" r="4"/>
-              <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
+            {Array.from({ length: SKELETON_COUNT }, (_, i) => (
+              <div
+                key={i}
+                className={`min-h-0 min-w-0 ${bentoClassAt(i)}`}
+              >
+                <div className="aspect-square w-full animate-pulse rounded-2xl bg-zinc-600/70 ring-1 ring-white/10" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {!loading && error && (
+          <p
+            className="mb-6 text-center text-sm text-orange-400 sm:text-base"
+            role="alert"
+          >
+            {error}
+          </p>
+        )}
+
+        {!loading && !error && posts.length === 0 && (
+          <div className="mx-auto max-w-lg rounded-2xl border border-white/10 bg-zinc-900/40 px-6 py-10 text-center">
+            <p className="mb-4 max-w-none text-base text-zinc-200">
+              Ainda não há fotos no mural por aqui — mas no Instagram a ONG compartilha o dia a dia,
+              eventos e quem faz o Rango de Rua acontecer.
+            </p>
+            <p className="mb-6 max-w-none text-sm text-zinc-400">
+              Siga a gente para não perder nenhuma novidade.
+            </p>
+            <a
+              href={INSTAGRAM_PROFILE}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn--outline inline-flex items-center gap-2"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
+              </svg>
+              Seguir @rangoderua
+            </a>
+          </div>
+        )}
+
+        {!loading && !error && posts.length > 0 && (
+          <div className="grid grid-cols-2 auto-rows-fr gap-3 sm:gap-4 md:grid-cols-4">
+            {posts.map((p, i) => (
+              <a
+                key={p.id}
+                href={p.permalink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`group min-h-0 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 ${bentoClassAt(i)}`}
+                title={p.caption?.trim() || 'Abrir no Instagram'}
+              >
+                <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-zinc-800 ring-1 ring-white/10 transition-transform duration-200 group-hover:scale-[1.02] group-hover:ring-pink-400/40">
+                  <img
+                    src={p.imageUrl}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                  />
+                  {p.caption?.trim() ? (
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 pt-8">
+                      <p className="line-clamp-2 text-left text-xs text-white/95 sm:text-sm">
+                        {p.caption.trim()}
+                      </p>
+                    </div>
+                  ) : null}
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-10 text-center">
+          <a
+            href={INSTAGRAM_PROFILE}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn--outline inline-flex items-center gap-2"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+              <circle cx="12" cy="12" r="4" />
+              <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
             </svg>
             @rangoderua
           </a>

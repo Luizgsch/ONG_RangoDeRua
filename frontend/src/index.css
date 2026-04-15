@@ -324,3 +324,6 @@ p { max-width: 65ch; }
   background: rgba(245, 200, 0, 0.28);
   color: var(--clr-white);
 }
+
+/* Tailwind: só utilitários (sem preflight) — convive com o design system acima */
+@tailwind utilities;
