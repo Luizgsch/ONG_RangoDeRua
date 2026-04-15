@@ -74,7 +74,7 @@ export default function NextEventBanner() {
 
   const eventMs = parseEventMs(settings.nextEventDate)
   const hasUpcoming = eventMs !== null && eventMs >= Date.now()
-  const hasPassed = eventMs !== null && eventMs < now
+  const hasPassed = eventMs !== null && eventMs < Date.now()
 
   const parts = hasUpcoming ? formatEventParts(settings.nextEventDate) : null
   const locationLabel = settings.eventLocation?.trim() || 'A definir'
