@@ -255,6 +255,19 @@ function parseAtomEntries(xml: string): CacheRow[] {
 
 function parseFeedBody(body: string): CacheRow[] {
   const trimmed = body.trim()
+  if (trimmed.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(trimmed) as unknown
+      if (Array.isArray(parsed)) {
+        const behold = parseBeholdPosts(parsed)
+        if (behold.length > 0) {
+          return behold
+        }
+      }
+    } catch {
+      /* continua para RSS / JSON Feed */
+    }
+  }
   if (trimmed.startsWith('{')) {
     const fromJson = parseJsonFeed(trimmed)
     if (fromJson.length > 0) {
@@ -269,6 +282,47 @@ function parseFeedBody(body: string): CacheRow[] {
     return parseAtomEntries(trimmed)
   }
   return []
+}
+
+/** Formato da API Behold: array de objetos com mediaUrl, permalink e caption. */
+type BeholdApiPost = {
+  mediaUrl?: string
+  permalink?: string
+  caption?: string | null
+  id?: string
+  timestamp?: string
+}
+
+function parseBeholdPosts(items: unknown[]): CacheRow[] {
+  const rows: CacheRow[] = []
+  let i = 0
+  for (const raw of items) {
+    if (!raw || typeof raw !== 'object') {
+      i += 1
+      continue
+    }
+    const o = raw as BeholdApiPost
+    const imageUrl = (o.mediaUrl ?? '').trim()
+    const permalink = (o.permalink ?? '').trim()
+    const caption =
+      o.caption != null && String(o.caption).trim() !== '' ? String(o.caption).trim() : null
+    if (!permalink || !imageUrl || !isValidImageUrl(imageUrl)) {
+      i += 1
+      continue
+    }
+    const idRaw = o.id != null ? String(o.id).trim() : ''
+    const id = (idRaw ? idRaw.slice(0, 512) : stableId(permalink, imageUrl, i)).slice(0, 512)
+    let createdAt = new Date()
+    if (o.timestamp) {
+      const d = new Date(o.timestamp)
+      if (!Number.isNaN(d.getTime())) {
+        createdAt = d
+      }
+    }
+    rows.push({ id, imageUrl, permalink, caption, createdAt })
+    i += 1
+  }
+  return rows
 }
 
 /**
@@ -291,10 +345,24 @@ async function fetchFeedText(url: string): Promise<string> {
     transformResponse: r => r,
   })
 
-  console.log('CONTEÚDO RECEBIDO DO FEED:', data)
-
   if (typeof data !== 'string') {
     throw new Error(`Resposta inesperada (tipo ${typeof data}) para status ${status}`)
+  }
+  return data
+}
+
+/** GET na URL do .env; se a resposta for JSON (array Behold ou objeto), devolve o payload já parseado. */
+async function fetchFeedPayload(url: string): Promise<unknown> {
+  const { data, status } = await axios.get<unknown>(url, {
+    timeout: 25_000,
+    validateStatus: s => s >= 200 && s < 400,
+    headers: {
+      Accept: 'application/json, application/rss+xml, application/atom+xml, application/xml, text/xml, */*',
+      'User-Agent': 'RangoDeRua-InstagramSync/1.0 (+https://rangoderua.org.br)',
+    },
+  })
+  if (status < 200 || status >= 400) {
+    throw new Error(`HTTP ${status}`)
   }
   return data
 }
@@ -305,36 +373,71 @@ export type InstagramSyncResult =
   | { ok: true; count: number }
   | { ok: false; error: string }
 
+function rowsFromFeedPayload(data: unknown): CacheRow[] {
+  if (Array.isArray(data)) {
+    return parseBeholdPosts(data)
+  }
+  if (typeof data === 'string') {
+    return parseFeedBody(data)
+  }
+  if (data !== null && typeof data === 'object') {
+    const o = data as { posts?: unknown }
+    if (Array.isArray(o.posts)) {
+      return parseBeholdPosts(o.posts)
+    }
+  }
+  return []
+}
+
+function axiosErrorMessage(e: unknown): string {
+  if (e instanceof AxiosError) {
+    return `HTTP ${e.response?.status ?? '—'}: ${e.message}`
+  }
+  if (e instanceof Error) {
+    return e.message
+  }
+  return String(e)
+}
+
 /**
- * Baixa um feed público (RSS/Atom/JSON Feed) com axios, interpreta imagens e atualiza o cache.
- * O banco só é limpo e reescrito após passar no sanity check (≥1 imagem válida).
+ * Consome a API do Behold em `INSTAGRAM_FEED_URL` (array com mediaUrl, permalink, caption),
+ * com fallback para feed em texto (RSS/Atom/JSON Feed). Atualiza o cache no Neon via Prisma.
  */
-export async function fetchAndCacheInstagramPosts(): Promise<InstagramSyncResult> {
+export async function syncInstagram(): Promise<InstagramSyncResult> {
   const url = resolveFeedUrl()
   if (!url) {
     return { ok: true, count: 0, skipped: true, reason: 'no_feed_url' }
   }
 
-  let body: string
-  try {
-    body = await fetchFeedText(url)
-  } catch (e) {
-    const message =
-      e instanceof AxiosError
-        ? `HTTP ${e.response?.status ?? '—'}: ${e.message}`
-        : e instanceof Error
-          ? e.message
-          : String(e)
-    return { ok: false, error: message }
-  }
+  let rows: CacheRow[]
 
-  const rows = parseFeedBody(body)
+  try {
+    const payload = await fetchFeedPayload(url)
+    rows = rowsFromFeedPayload(payload)
+    if (rows.length === 0 && typeof payload === 'string') {
+      rows = parseFeedBody(payload)
+    }
+    if (rows.length === 0) {
+      const body = await fetchFeedText(url)
+      rows = parseFeedBody(body)
+    }
+  } catch (e) {
+    return { ok: false, error: axiosErrorMessage(e) }
+  }
 
   const deduped = dedupeRowsById(rows)
 
   if (!passesFeedSanityCheck(deduped)) {
     return { ok: true, count: 0, skipped: true, reason: 'sanity_check_failed' }
   }
+
+  console.log(
+    '[behold] dados recebidos antes do Prisma:',
+    deduped.length,
+    'itens (ex.:',
+    deduped.slice(0, 2).map(r => ({ permalink: r.permalink, imageUrl: r.imageUrl.slice(0, 48) + '…' })),
+    ')',
+  )
 
   try {
     await prisma.$transaction([
@@ -347,6 +450,11 @@ export async function fetchAndCacheInstagramPosts(): Promise<InstagramSyncResult
   }
 
   return { ok: true, count: deduped.length }
+}
+
+/** Mantido para rotas e job agendado; delega para `syncInstagram`. */
+export async function fetchAndCacheInstagramPosts(): Promise<InstagramSyncResult> {
+  return syncInstagram()
 }
 
 function dedupeRowsById(rows: CacheRow[]): CacheRow[] {
