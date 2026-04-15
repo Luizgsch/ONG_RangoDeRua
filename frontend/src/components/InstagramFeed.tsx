@@ -23,11 +23,15 @@ const BENTO_CELL_CLASSES = [
   'col-span-1 row-span-1',
 ] as const
 
-function bentoClassAt(index: number): string {
+/** Com um único post, nunca usa spans grandes — uma célula padrão no grid. */
+function bentoClassAt(index: number, total: number): string {
+  if (total === 1) {
+    return 'col-span-1 row-span-1'
+  }
   return BENTO_CELL_CLASSES[index % BENTO_CELL_CLASSES.length]!
 }
 
-const SKELETON_COUNT = 8
+const SKELETON_COUNT = 6
 
 export default function InstagramFeed() {
   const [posts, setPosts] = useState<InstagramCachePost[]>([])
@@ -91,16 +95,13 @@ export default function InstagramFeed() {
 
         {loading && (
           <div
-            className="grid grid-cols-2 auto-rows-fr gap-3 sm:gap-4 md:grid-cols-4"
+            className="grid grid-cols-2 items-start gap-3 sm:gap-4 md:grid-cols-3"
             role="status"
             aria-busy="true"
             aria-label="Carregando publicações do Instagram"
           >
             {Array.from({ length: SKELETON_COUNT }, (_, i) => (
-              <div
-                key={i}
-                className={`min-h-0 min-w-0 ${bentoClassAt(i)}`}
-              >
+              <div key={i} className="min-h-0 min-w-0">
                 <div className="aspect-square w-full animate-pulse rounded-2xl bg-zinc-600/70 ring-1 ring-white/10" />
               </div>
             ))}
@@ -151,23 +152,23 @@ export default function InstagramFeed() {
         )}
 
         {!loading && !error && posts.length > 0 && (
-          <div className="grid grid-cols-2 auto-rows-fr gap-3 sm:gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-2 items-start gap-3 sm:gap-4 md:grid-cols-3">
             {posts.map((p, i) => (
               <a
                 key={p.id}
                 href={p.permalink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`group min-h-0 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 ${bentoClassAt(i)}`}
+                className={`group block min-h-0 min-w-0 self-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 ${bentoClassAt(i, posts.length)}`}
                 title={p.caption?.trim() || 'Abrir no Instagram'}
               >
-                <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-zinc-800 ring-1 ring-white/10 transition-transform duration-200 group-hover:scale-[1.02] group-hover:ring-pink-400/40">
+                <div className="relative w-full max-w-full overflow-hidden rounded-2xl bg-zinc-800 ring-1 ring-white/10 transition-transform duration-200 group-hover:scale-[1.02] group-hover:ring-pink-400/40">
                   <img
                     src={p.imageUrl}
                     alt=""
                     loading="lazy"
                     decoding="async"
-                    className="h-full w-full object-cover"
+                    className="aspect-square w-full object-cover"
                   />
                   {p.caption?.trim() ? (
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 pt-8">
