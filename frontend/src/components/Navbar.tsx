@@ -1,23 +1,22 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useLayoutEffect } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import logo from '../assets/Logo.jpg'
 import { homeHashFragment } from '../homeHref'
 import './Navbar.css'
 
-const links: (
-  | { kind: 'hash'; id: string; label: string }
-  | { kind: 'route'; to: string; label: string }
-)[] = [
-  { kind: 'hash', id: 'sobre', label: 'Sobre' },
-  { kind: 'hash', id: 'o-que-fazemos', label: 'O que fazemos' },
-  { kind: 'hash', id: 'numeros', label: 'Números' },
-  { kind: 'route', to: '/noticias', label: 'Notícias' },
-  { kind: 'hash', id: 'contato', label: 'Contato' },
+const links: { id: string; label: string }[] = [
+  { id: 'proxima-leva', label: 'Próxima saída' },
+  { id: 'instagram', label: 'Instagram' },
+  { id: 'sobre', label: 'Sobre' },
+  { id: 'o-que-fazemos', label: 'O que fazemos' },
+  { id: 'numeros', label: 'Números' },
+  { id: 'contato', label: 'Contato' },
 ]
 
 export default function Navbar() {
-  const [open, setOpen]       = useState(false)
+  const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const headerRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 40)
@@ -25,35 +24,39 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handler)
   }, [])
 
+  useLayoutEffect(() => {
+    const el = headerRef.current
+    if (!el) return
+    const apply = () => {
+      document.documentElement.style.setProperty('--site-header-offset', `${el.offsetHeight}px`)
+    }
+    apply()
+    const ro = new ResizeObserver(apply)
+    ro.observe(el)
+    return () => {
+      ro.disconnect()
+      document.documentElement.style.removeProperty('--site-header-offset')
+    }
+  }, [open, scrolled])
+
   return (
-    <header className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}>
+    <header ref={headerRef} className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}>
       <div className="container flex-between navbar__inner">
         <Link to="/" className="navbar__brand">
           <img src={logo} alt="Rango de Rua" className="navbar__brand-logo" />
         </Link>
 
         <nav className={`navbar__nav${open ? ' navbar__nav--open' : ''}`}>
-          {links.map(l =>
-            l.kind === 'hash' ? (
-              <a
-                key={l.id}
-                href={homeHashFragment(l.id)}
-                className="navbar__link"
-                onClick={() => setOpen(false)}
-              >
-                {l.label}
-              </a>
-            ) : (
-              <Link
-                key={l.to}
-                to={l.to}
-                className="navbar__link"
-                onClick={() => setOpen(false)}
-              >
-                {l.label}
-              </Link>
-            )
-          )}
+          {links.map(l => (
+            <a
+              key={l.id}
+              href={homeHashFragment(l.id)}
+              className="navbar__link"
+              onClick={() => setOpen(false)}
+            >
+              {l.label}
+            </a>
+          ))}
           <NavLink to="/voluntario" className="btn btn--primary" onClick={() => setOpen(false)}>
             Seja voluntário
           </NavLink>

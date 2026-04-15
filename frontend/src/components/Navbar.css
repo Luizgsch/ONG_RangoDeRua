@@ -20,6 +20,7 @@
 }
 
 .navbar__brand {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -29,14 +30,14 @@
   color: var(--text-h);
 }
 .navbar__brand-logo {
-  height: 90px;
+  height: clamp(3.75rem, 12vmin, 6.25rem);
   width: auto;
+  max-height: 6.25rem;
   object-fit: contain;
   border-radius: 6px;
   transition: opacity 0.2s;
 }
 .navbar__brand:hover .navbar__brand-logo { opacity: 0.85; }
-.navbar--scrolled .navbar__brand-logo { height: 48px; }
 
 .navbar__nav {
   display: flex;
@@ -84,6 +85,11 @@
 .navbar__burger--open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 @media (max-width: 768px) {
+  .navbar__brand-logo {
+    height: clamp(3.25rem, 20vw, 4.5rem);
+    max-height: 4.5rem;
+  }
+
   .navbar__burger { display: flex; }
 
   .navbar__nav {

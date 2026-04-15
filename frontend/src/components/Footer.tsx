@@ -38,7 +38,6 @@ export default function Footer() {
               <li><a href={homeHashFragment('frentes')}>Frentes de atuação</a></li>
               <li><a href={homeHashFragment('programas')}>Programas</a></li>
               <li><a href={homeHashFragment('numeros')}>Números</a></li>
-              <li><Link to="/noticias">Notícias</Link></li>
             </ul>
           </div>
 

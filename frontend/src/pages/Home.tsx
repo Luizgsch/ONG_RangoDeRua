@@ -16,17 +16,17 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <NextEventBanner />
+      <InstagramFeed />
+      <Location />
       <About />
       <Numbers />
       <WhatWeDo />
       <FrontLines />
       <Programs />
-      <NextEventBanner />
-      <Partners />
       <Awards />
-      <InstagramFeed />
+      <Partners />
       <Governance />
-      <Location />
       <Contact />
     </>
   )

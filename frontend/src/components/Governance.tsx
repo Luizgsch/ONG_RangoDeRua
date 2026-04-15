@@ -34,7 +34,7 @@ export default function Governance() {
             </div>
           </div>
 
-          <div className="governance__docs">
+          <div className="governance__docs" id="transparencia">
             <h3>Documentos</h3>
             <div className="governance__doc-list">
               {[

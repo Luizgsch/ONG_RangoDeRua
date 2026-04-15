@@ -10,27 +10,9 @@ type ManualGalleryPost = {
   createdAt: string
 }
 
-/** Padrão Bento: alterna células 1×1, destaques 2×2 e faixas 2×1 / 1×2 */
-const BENTO_CELL_CLASSES = [
-  'col-span-2 row-span-2',
-  'col-span-1 row-span-1',
-  'col-span-1 row-span-1',
-  'col-span-1 row-span-1',
-  'col-span-1 row-span-1',
-  'col-span-2 row-span-1',
-  'col-span-1 row-span-2',
-  'col-span-1 row-span-1',
-] as const
-
-/** Com um único post, nunca usa spans grandes — uma célula padrão no grid. */
-function bentoClassAt(index: number, total: number): string {
-  if (total === 1) {
-    return 'col-span-1 row-span-1'
-  }
-  return BENTO_CELL_CLASSES[index % BENTO_CELL_CLASSES.length]!
-}
-
 const SKELETON_COUNT = 6
+
+const GRID_CLASS = 'grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4'
 
 export default function InstagramFeed() {
   const [posts, setPosts] = useState<ManualGalleryPost[]>([])
@@ -94,7 +76,7 @@ export default function InstagramFeed() {
 
         {loading && (
           <div
-            className="grid grid-cols-2 items-start gap-3 sm:gap-4 md:grid-cols-3"
+            className={GRID_CLASS}
             role="status"
             aria-busy="true"
             aria-label="Carregando publicações do Instagram"
@@ -151,14 +133,14 @@ export default function InstagramFeed() {
         )}
 
         {!loading && !error && posts.length > 0 && (
-          <div className="grid grid-cols-2 items-start gap-3 sm:gap-4 md:grid-cols-3">
-            {posts.map((p, i) => (
+          <div className={GRID_CLASS}>
+            {posts.map(p => (
               <a
                 key={p.id}
                 href={p.permalink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`group block min-h-0 min-w-0 self-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 ${bentoClassAt(i, posts.length)}`}
+                className="group block min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
                 title="Abrir no Instagram"
               >
                 <div className="relative w-full max-w-full overflow-hidden rounded-2xl bg-zinc-800 ring-1 ring-white/10 transition-transform duration-200 group-hover:scale-[1.02] group-hover:ring-pink-400/40">

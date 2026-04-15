@@ -1,76 +1,16 @@
 import { Link } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-import { ADMIN_SETTINGS_ENDPOINT } from '../config/api'
+import {
+  formatEventParts,
+  parseEventMs,
+  useNextEventSettings,
+} from '../hooks/useNextEventSettings'
 import './NextBatch.css'
-
-type Settings = {
-  nextEventDate: string | null
-  eventLocation: string | null
-}
-
-const TZ = 'America/Sao_Paulo'
 
 const spots = 12
 const totalSpots = 30
 
-function formatEventParts(iso: string | null) {
-  if (!iso) return null
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return null
-  const day = new Intl.DateTimeFormat('pt-BR', { timeZone: TZ, day: '2-digit' }).format(d)
-  const monthRaw = new Intl.DateTimeFormat('pt-BR', { timeZone: TZ, month: 'long' }).format(d)
-  const month = monthRaw.charAt(0).toUpperCase() + monthRaw.slice(1)
-  const year = new Intl.DateTimeFormat('pt-BR', { timeZone: TZ, year: 'numeric' }).format(d)
-  const weekdayRaw = new Intl.DateTimeFormat('pt-BR', { timeZone: TZ, weekday: 'long' }).format(d)
-  const weekday = weekdayRaw.charAt(0).toUpperCase() + weekdayRaw.slice(1)
-  const hm = new Intl.DateTimeFormat('pt-BR', {
-    timeZone: TZ,
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  }).format(d)
-  const time = hm.replace(':', 'h')
-  return { day, month, year, weekday, time }
-}
-
-function parseEventMs(iso: string | null): number | null {
-  if (!iso) return null
-  const t = new Date(iso).getTime()
-  return Number.isNaN(t) ? null : t
-}
-
 export default function NextEventBanner() {
-  const [settings, setSettings] = useState<Settings>({ nextEventDate: null, eventLocation: null })
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    let cancelled = false
-    void (async () => {
-      try {
-        const res = await fetch(ADMIN_SETTINGS_ENDPOINT)
-        if (!res.ok) throw new Error(`Erro ${res.status}`)
-        const data = (await res.json()) as {
-          nextEventDate?: string | null
-          eventLocation?: string | null
-        }
-        if (!cancelled) {
-          setSettings({
-            nextEventDate: data.nextEventDate ?? null,
-            eventLocation: data.eventLocation ?? null,
-          })
-        }
-      } catch {
-        if (!cancelled) {
-          setSettings({ nextEventDate: null, eventLocation: null })
-        }
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  const { settings, loading } = useNextEventSettings()
 
   const eventMs = parseEventMs(settings.nextEventDate)
   const hasUpcoming = eventMs !== null && eventMs >= Date.now()

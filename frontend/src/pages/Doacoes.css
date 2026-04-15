@@ -29,39 +29,6 @@
   background-clip: text;
 }
 
-/* Options */
-.don-options {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-}
-.don-option {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 2rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  text-align: center;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.don-option:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
-.don-option__emoji { font-size: 2.5rem; }
-.don-option__amount {
-  font-family: var(--font-heading);
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: var(--text-h);
-}
-.don-option__desc { color: var(--text-muted); font-size: 0.875rem; }
-
-.don-option--yellow:hover { border-color: var(--clr-yellow); }
-.don-option--orange:hover { border-color: var(--clr-orange); }
-.don-option--green:hover  { border-color: var(--clr-green);  }
-.don-option--blue:hover   { border-color: var(--clr-blue);   }
-
 /* Main */
 .don-main {
   display: grid;
@@ -125,50 +92,207 @@
 }
 .don-bank strong { color: var(--text-h); }
 
-/* Non-monetary */
-.don-items {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
-  margin-bottom: 2.5rem;
+/* Doação em espécie — alinhado ao bloco PIX (don-main / don-pix-card) */
+.don-inkind .section-header p {
+  max-width: 62ch;
 }
-.don-item {
+
+.don-inkind__main {
+  display: grid;
+  grid-template-columns: 1fr min(380px, 100%);
+  gap: clamp(2rem, 4vw, 3.5rem);
+  align-items: start;
+  margin-top: 0.5rem;
+}
+
+.don-inkind__subhead {
+  font-family: var(--font-heading);
+  font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+  font-weight: 700;
+  color: var(--text-h);
+  margin-bottom: 0.5rem;
+}
+
+.don-inkind__lead {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  max-width: 52ch;
+  margin-bottom: 1.5rem;
+}
+
+.don-inkind__cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2.25rem;
+}
+
+.don-inkind__card {
   background: var(--surface2);
   border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.35rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.don-inkind__card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+.don-inkind__card h4 {
+  font-size: 1.05rem;
+  color: var(--text-h);
+  margin: 0;
+}
+.don-inkind__card p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  max-width: 100%;
+}
+
+.don-inkind__emoji {
+  font-size: 1.75rem;
+  line-height: 1;
+  width: fit-content;
+  padding: 0.45rem 0.55rem;
   border-radius: var(--radius);
-  padding: 1.5rem 1.25rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  text-align: center;
-  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.don-inkind__card--yellow:hover { border-color: var(--clr-yellow); }
+.don-inkind__card--blue:hover   { border-color: var(--clr-blue);   }
+.don-inkind__card--orange:hover { border-color: var(--clr-orange); }
+.don-inkind__card--green:hover  { border-color: var(--clr-green);  }
+
+.don-inkind__tips {
+  background: rgba(34, 197, 94, 0.06);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 1.35rem 1.5rem;
+}
+.don-inkind__tips ul {
+  margin: 0.75rem 0 0;
+  padding-left: 1.2rem;
+  list-style: disc;
   color: var(--text);
-  transition: border-color 0.2s, transform 0.2s;
-}
-.don-item span:first-child { font-size: 2rem; }
-.don-item:hover { transform: translateY(-3px); }
-
-.don-item--yellow:hover { border-color: var(--clr-yellow); }
-.don-item--blue:hover   { border-color: var(--clr-blue);   }
-.don-item--orange:hover { border-color: var(--clr-orange); }
-.don-item--green:hover  { border-color: var(--clr-green);  }
-
-.don-items-contact {
+  font-size: 0.9rem;
+  line-height: 1.55;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 0.45rem;
+}
+.don-inkind__tips li::marker { color: var(--clr-green); }
+
+.don-inkind-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem 1.75rem;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+.don-inkind-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--clr-green), var(--clr-yellow));
+  opacity: 0.9;
+}
+
+.don-inkind-card .tag {
+  width: fit-content;
+}
+
+.don-inkind-card h3 {
+  font-size: clamp(1.35rem, 2.5vw, 1.6rem);
+  margin: 0;
+  color: var(--text-h);
+}
+
+.don-inkind-card__intro {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text);
+  line-height: 1.55;
+  max-width: 100%;
+}
+
+.don-inkind-card__btn {
+  justify-content: center;
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+.don-inkind-card__meta {
+  margin: -0.25rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
   text-align: center;
 }
-.don-items-contact p { color: var(--text-muted); max-width: 100%; }
+
+.don-inkind-card__steps {
+  margin-top: 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.don-inkind-card__step {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+.don-inkind-card__step-num {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 9999px;
+  background: var(--clr-green);
+  color: var(--clr-black);
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.don-inkind-card__step strong {
+  display: block;
+  color: var(--text-h);
+  font-size: 0.95rem;
+  margin-bottom: 0.15rem;
+}
+.don-inkind-card__step span:last-child {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
 
 @media (max-width: 900px) {
-  .don-options { grid-template-columns: repeat(2, 1fr); }
-  .don-items   { grid-template-columns: repeat(2, 1fr); }
+  .don-inkind__main {
+    grid-template-columns: 1fr;
+  }
+  .don-inkind__aside {
+    order: -1;
+  }
   .don-main    { grid-template-columns: 1fr; }
 }
-@media (max-width: 480px) {
-  .don-options { grid-template-columns: 1fr 1fr; }
-  .don-items   { grid-template-columns: 1fr 1fr; }
+
+@media (max-width: 600px) {
+  .don-inkind__cards {
+    grid-template-columns: 1fr;
+  }
 }
