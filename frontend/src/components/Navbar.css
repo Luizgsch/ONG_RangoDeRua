@@ -30,12 +30,16 @@
   color: var(--text-h);
 }
 .navbar__brand-logo {
-  height: clamp(3.75rem, 12vmin, 6.25rem);
+  height: 5.625rem; /* 90px — destaque no hero */
+  max-height: 5.625rem;
   width: auto;
-  max-height: 6.25rem;
   object-fit: contain;
   border-radius: 6px;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, height 0.35s ease, max-height 0.35s ease;
+}
+.navbar--scrolled .navbar__brand-logo {
+  height: 3rem; /* 48px — barra compacta fora do hero */
+  max-height: 3rem;
 }
 .navbar__brand:hover .navbar__brand-logo { opacity: 0.85; }
 
@@ -86,8 +90,12 @@
 
 @media (max-width: 768px) {
   .navbar__brand-logo {
-    height: clamp(3.25rem, 20vw, 4.5rem);
-    max-height: 4.5rem;
+    height: 4rem;
+    max-height: 4rem;
+  }
+  .navbar--scrolled .navbar__brand-logo {
+    height: 2.5rem;
+    max-height: 2.5rem;
   }
 
   .navbar__burger { display: flex; }
