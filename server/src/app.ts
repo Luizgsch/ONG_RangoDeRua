@@ -6,7 +6,6 @@ import swagger from '@fastify/swagger'
 import swaggerUi from '@fastify/swagger-ui'
 import jwtAuth from './plugins/jwtAuth.js'
 import { adminRoutes } from './routes/admin.js'
-import { instagramCacheRoutes } from './routes/instagramCache.js'
 import { volunteerRoutes } from './routes/volunteers.js'
 
 type SwaggerPluginOptions = NonNullable<Parameters<typeof swagger>[1]>
@@ -103,8 +102,7 @@ const defaultSwaggerOptions: SwaggerPluginOptions = {
     tags: [
       { name: 'Autenticação', description: 'Login administrativo (JWT)' },
       { name: 'Voluntários', description: 'Cadastro e listagem de voluntários' },
-      { name: 'Instagram', description: 'Cache do feed para o site' },
-      { name: 'Admin', description: 'Painel: agenda e galeria manual' },
+      { name: 'Admin', description: 'Painel: DashboardSettings (agenda) e galeria manual (Cloudinary)' },
     ],
     components: {
       securitySchemes: {
@@ -142,7 +140,6 @@ export async function buildApp(swaggerOptions?: SwaggerPluginOptions) {
 
   app.get('/health', async () => ({ ok: true as const, service: 'rango-de-rua-api' }))
 
-  await app.register(instagramCacheRoutes)
   await app.register(adminRoutes)
   await app.register(volunteerRoutes)
 

@@ -10,7 +10,6 @@ type Settings = {
 
 const TZ = 'America/Sao_Paulo'
 
-/** Vagas: valores fixos até existir modelo no painel */
 const spots = 12
 const totalSpots = 30
 
@@ -32,6 +31,12 @@ function formatEventParts(iso: string | null) {
   }).format(d)
   const time = hm.replace(':', 'h')
   return { day, month, year, weekday, time }
+}
+
+function parseEventMs(iso: string | null): number | null {
+  if (!iso) return null
+  const t = new Date(iso).getTime()
+  return Number.isNaN(t) ? null : t
 }
 
 export default function NextEventBanner() {
@@ -67,9 +72,13 @@ export default function NextEventBanner() {
     }
   }, [])
 
-  const parts = formatEventParts(settings.nextEventDate)
+  const eventMs = parseEventMs(settings.nextEventDate)
+  const hasUpcoming = eventMs !== null && eventMs >= Date.now()
+  const hasPassed = eventMs !== null && eventMs < now
+
+  const parts = hasUpcoming ? formatEventParts(settings.nextEventDate) : null
   const locationLabel = settings.eventLocation?.trim() || 'A definir'
-  const timeLabel = parts?.time ?? 'A definir'
+  const timeLabel = parts?.time ?? (hasPassed ? '—' : 'A definir')
   const pct = Math.round((spots / totalSpots) * 100)
 
   return (
@@ -89,6 +98,16 @@ export default function NextEventBanner() {
                   </span>
                   <div>
                     <span className="nextbatch__month">Carregando…</span>
+                  </div>
+                </>
+              ) : hasPassed ? (
+                <>
+                  <span className="nextbatch__day" aria-hidden>
+                    —
+                  </span>
+                  <div>
+                    <span className="nextbatch__month">Aguardando próxima data</span>
+                    <span className="nextbatch__weekday">A equipe atualizará em breve</span>
                   </div>
                 </>
               ) : parts ? (

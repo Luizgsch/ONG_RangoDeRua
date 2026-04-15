@@ -49,9 +49,9 @@ const adminPlugin: FastifyPluginAsync = async app => {
     {
       schema: {
         tags: ['Admin'],
-        summary: 'Ler configurações do painel (público para a Home)',
+        summary: 'Ler DashboardSettings (próximo encontro)',
         description:
-          'Retorna próxima data do encontro e local. Se não existir linha no banco, devolve objeto padrão com campos nulos.',
+          'GET público: `nextEventDate` e `eventLocation` da tabela DashboardSettings. Sem linha no banco, devolve valores nulos.',
         response: {
           200: {
             type: 'object',
@@ -86,7 +86,7 @@ const adminPlugin: FastifyPluginAsync = async app => {
       preHandler: [app.authenticate],
       schema: {
         tags: ['Admin'],
-        summary: 'Atualizar configurações do painel',
+        summary: 'Salvar DashboardSettings (próximo encontro)',
         security: [{ bearerAuth: [] }],
         body: {
           type: 'object',
@@ -262,6 +262,10 @@ const adminPlugin: FastifyPluginAsync = async app => {
       const permalink =
         permalinkField !== '' && isValidHttpUrl(permalinkField) ? permalinkField : DEFAULT_INSTAGRAM
 
+      /**
+       * Roleta (máx. 6): com 6 posts, remove o mais antigo antes de gravar o novo —
+       * apaga no Cloudinary pelo public_id (`imageKey`) e remove o registro no Neon.
+       */
       const count = await prisma.manualPost.count()
       if (count >= MAX_MANUAL_POSTS) {
         const oldest = await prisma.manualPost.findFirst({
