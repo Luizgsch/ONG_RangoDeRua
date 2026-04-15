@@ -51,6 +51,7 @@ const app = await buildApp({
 
 try {
   await app.listen({ port, host })
+  console.log(app.printRoutes())
   scheduleInstagramSync(app.log)
 } catch (err) {
   app.log.error(err)
