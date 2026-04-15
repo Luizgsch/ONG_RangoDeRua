@@ -27,15 +27,6 @@ function defaultSettingsResponse() {
   }
 }
 
-function isValidHttpUrl(s: string): boolean {
-  try {
-    const u = new URL(s)
-    return u.protocol === 'http:' || u.protocol === 'https:'
-  } catch {
-    return false
-  }
-}
-
 const adminPlugin: FastifyPluginAsync = async app => {
   await app.register(multipart, {
     limits: {
@@ -171,9 +162,10 @@ const adminPlugin: FastifyPluginAsync = async app => {
       id: { type: 'string', format: 'uuid' },
       imageUrl: { type: 'string' },
       permalink: { type: 'string' },
+      sortOrder: { type: 'integer' },
       createdAt: { type: 'string' },
     },
-    required: ['id', 'imageUrl', 'permalink', 'createdAt'],
+    required: ['id', 'imageUrl', 'permalink', 'sortOrder', 'createdAt'],
   } as const
 
   app.get(
@@ -182,7 +174,8 @@ const adminPlugin: FastifyPluginAsync = async app => {
       schema: {
         tags: ['Admin'],
         summary: 'Listar posts manuais da galeria (Home)',
-        description: 'Até 6 posts, mais recentes primeiro. Público para a seção Instagram no site.',
+        description:
+          'Até 6 posts, ordenados por `sortOrder` (menor primeiro). Público para a seção Instagram no site.',
         response: {
           200: {
             type: 'array',
@@ -193,7 +186,7 @@ const adminPlugin: FastifyPluginAsync = async app => {
     },
     async (_request, reply) => {
       const list = await prisma.manualPost.findMany({
-        orderBy: { createdAt: 'desc' },
+        orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
         take: MAX_MANUAL_POSTS,
       })
       return reply.send(
@@ -201,6 +194,7 @@ const adminPlugin: FastifyPluginAsync = async app => {
           id: p.id,
           imageUrl: p.imageUrl,
           permalink: p.permalink,
+          sortOrder: p.sortOrder,
           createdAt: p.createdAt.toISOString(),
         })),
       )
@@ -215,7 +209,7 @@ const adminPlugin: FastifyPluginAsync = async app => {
         tags: ['Admin'],
         summary: 'Upload de imagem para a galeria (Cloudinary + roleta de 6)',
         description:
-          'multipart/form-data: campo `image` (arquivo) e opcionalmente `permalink` (URL do post). Se já houver 6 posts, remove o mais antigo do storage e do banco antes de salvar o novo.',
+          'multipart/form-data: campo `image` (arquivo). O link público da foto é sempre o perfil @rangoderua. Se já houver 6 posts, remove o mais antigo do storage e do banco antes de salvar o novo.',
         security: [{ bearerAuth: [] }],
         consumes: ['multipart/form-data'],
         response: {
@@ -229,7 +223,6 @@ const adminPlugin: FastifyPluginAsync = async app => {
     },
     async (request, reply) => {
       let imageBuffer: Buffer | null = null
-      let permalinkField = ''
 
       try {
         const parts = request.parts()
@@ -239,8 +232,6 @@ const adminPlugin: FastifyPluginAsync = async app => {
               return reply.status(400).send({ error: 'Use apenas imagem JPEG, PNG, WebP ou GIF.' })
             }
             imageBuffer = await part.toBuffer()
-          } else if (part.type === 'field' && part.fieldname === 'permalink') {
-            permalinkField = String(part.value ?? '').trim()
           }
         }
       } catch (e: unknown) {
@@ -256,11 +247,7 @@ const adminPlugin: FastifyPluginAsync = async app => {
         return reply.status(400).send({ error: 'Envie o arquivo no campo image.' })
       }
 
-      if (permalinkField !== '' && !isValidHttpUrl(permalinkField)) {
-        return reply.status(400).send({ error: 'Link do post inválido. Deixe em branco ou use uma URL http/https.' })
-      }
-      const permalink =
-        permalinkField !== '' && isValidHttpUrl(permalinkField) ? permalinkField : DEFAULT_INSTAGRAM
+      const permalink = DEFAULT_INSTAGRAM
 
       /**
        * Roleta (máx. 6): com 6 posts, remove o mais antigo antes de gravar o novo —
@@ -292,11 +279,15 @@ const adminPlugin: FastifyPluginAsync = async app => {
         return reply.status(400).send({ error: 'Falha ao enviar imagem para o storage.' })
       }
 
+      const maxRow = await prisma.manualPost.aggregate({ _max: { sortOrder: true } })
+      const nextSortOrder = (maxRow._max.sortOrder ?? -1) + 1
+
       const created = await prisma.manualPost.create({
         data: {
           imageUrl,
           imageKey,
           permalink,
+          sortOrder: nextSortOrder,
         },
       })
 
@@ -304,8 +295,73 @@ const adminPlugin: FastifyPluginAsync = async app => {
         id: created.id,
         imageUrl: created.imageUrl,
         permalink: created.permalink,
+        sortOrder: created.sortOrder,
         createdAt: created.createdAt.toISOString(),
       })
+    },
+  )
+
+  app.put(
+    '/api/admin/posts/order',
+    {
+      preHandler: [app.authenticate],
+      schema: {
+        tags: ['Admin'],
+        summary: 'Salvar ordem da galeria (drag-and-drop)',
+        description:
+          'Body JSON `{ "ids": ["uuid", ...] }` com todos os IDs dos posts atuais, na ordem desejada (primeiro = esquerda no site).',
+        security: [{ bearerAuth: [] }],
+        body: {
+          type: 'object',
+          required: ['ids'],
+          properties: {
+            ids: {
+              type: 'array',
+              items: { type: 'string', format: 'uuid' },
+              minItems: 1,
+              maxItems: MAX_MANUAL_POSTS,
+            },
+          },
+        },
+        response: {
+          204: { type: 'null' },
+          400: errorBodySchema,
+          401: errorBodySchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      const body = request.body as { ids?: string[] }
+      const ids = Array.isArray(body.ids) ? body.ids : []
+      if (ids.length === 0) {
+        return reply.status(400).send({ error: 'Envie ids: array de UUIDs na ordem desejada.' })
+      }
+      const unique = new Set(ids)
+      if (unique.size !== ids.length) {
+        return reply.status(400).send({ error: 'IDs duplicados não são permitidos.' })
+      }
+
+      const rows = await prisma.manualPost.findMany({ select: { id: true } })
+      if (rows.length !== ids.length) {
+        return reply.status(400).send({ error: 'A lista de ids deve incluir exatamente todos os posts da galeria.' })
+      }
+      const existing = new Set(rows.map(r => r.id))
+      for (const id of ids) {
+        if (!existing.has(id)) {
+          return reply.status(400).send({ error: 'ID desconhecido na lista.' })
+        }
+      }
+
+      await prisma.$transaction(
+        ids.map((id, index) =>
+          prisma.manualPost.update({
+            where: { id },
+            data: { sortOrder: index },
+          }),
+        ),
+      )
+
+      return reply.status(204).send()
     },
   )
 

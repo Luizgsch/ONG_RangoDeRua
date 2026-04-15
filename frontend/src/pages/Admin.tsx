@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ADMIN_MANUAL_POSTS_ENDPOINT,
+  ADMIN_MANUAL_POSTS_ORDER_ENDPOINT,
   ADMIN_SETTINGS_ENDPOINT,
   API_BASE,
 } from '../config/api'
@@ -26,6 +27,7 @@ export type ManualPostDto = {
   id: string
   imageUrl: string
   permalink: string
+  sortOrder: number
   createdAt: string
 }
 
@@ -52,8 +54,12 @@ function authJsonHeaders(token: string): HeadersInit {
   return { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
 }
 
-function sortPostsByDateDesc(posts: ManualPostDto[]): ManualPostDto[] {
-  return [...posts].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+function sortPostsByGalleryOrder(posts: ManualPostDto[]): ManualPostDto[] {
+  return [...posts].sort((a, b) => {
+    const so = (a.sortOrder ?? 0) - (b.sortOrder ?? 0)
+    if (so !== 0) return so
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  })
 }
 
 /**
@@ -81,10 +87,11 @@ export default function Admin() {
 
   const [galleryFile, setGalleryFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [giLink, setGiLink] = useState('')
   const [gallerySaving, setGallerySaving] = useState(false)
   const [galleryFeedback, setGalleryFeedback] = useState<'idle' | 'success' | 'error'>('idle')
   const [galleryErrorMsg, setGalleryErrorMsg] = useState<string | null>(null)
+  const [galleryDraggingId, setGalleryDraggingId] = useState<string | null>(null)
+  const [galleryReorderSaving, setGalleryReorderSaving] = useState(false)
 
   useEffect(() => {
     if (!galleryFile) {
@@ -144,7 +151,7 @@ export default function Admin() {
           const nextIso = settingsData.nextEventDate ?? null
           setAgendaDatetime(nextIso ? toDatetimeLocalValue(nextIso) : '')
           setAgendaLocation(settingsData.eventLocation ?? '')
-          setManualPosts(sortPostsByDateDesc(Array.isArray(postsData) ? postsData : []))
+          setManualPosts(sortPostsByGalleryOrder(Array.isArray(postsData) ? postsData : []))
         }
       } catch (err) {
         if (!cancelled) {
@@ -249,9 +256,6 @@ export default function Admin() {
     try {
       const fd = new FormData()
       fd.append('image', galleryFile)
-      if (giLink.trim() !== '') {
-        fd.append('permalink', giLink.trim())
-      }
       const res = await fetch(ADMIN_MANUAL_POSTS_ENDPOINT, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
@@ -277,9 +281,8 @@ export default function Admin() {
         return
       }
       const created = JSON.parse(text) as ManualPostDto
-      setManualPosts(prev => sortPostsByDateDesc([...prev.filter(p => p.id !== created.id), created]))
+      setManualPosts(prev => sortPostsByGalleryOrder([...prev.filter(p => p.id !== created.id), created]))
       setGalleryFile(null)
-      setGiLink('')
       if (fileInputRef.current) fileInputRef.current.value = ''
       setGalleryFeedback('success')
       window.setTimeout(() => setGalleryFeedback('idle'), 2500)
@@ -322,6 +325,89 @@ export default function Admin() {
     } catch {
       setGalleryErrorMsg('Falha ao excluir.')
     }
+  }
+
+  async function reloadGalleryPosts() {
+    if (!token) return
+    try {
+      const res = await fetch(ADMIN_MANUAL_POSTS_ENDPOINT)
+      if (!res.ok) return
+      const postsData = (await res.json()) as ManualPostDto[]
+      setManualPosts(sortPostsByGalleryOrder(Array.isArray(postsData) ? postsData : []))
+    } catch {
+      /* ignorado */
+    }
+  }
+
+  async function persistGalleryOrder(orderedIds: string[]) {
+    if (!token || orderedIds.length === 0) return
+    setGalleryReorderSaving(true)
+    setGalleryErrorMsg(null)
+    try {
+      const res = await fetch(ADMIN_MANUAL_POSTS_ORDER_ENDPOINT, {
+        method: 'PUT',
+        headers: authJsonHeaders(token),
+        body: JSON.stringify({ ids: orderedIds }),
+      })
+      if (res.status === 401) {
+        clearStoredToken()
+        setToken(null)
+        setListError('Sessão expirada. Entre novamente.')
+        return
+      }
+      if (!res.ok && res.status !== 204) {
+        const text = await res.text()
+        let msg = text || `Erro ${res.status}`
+        try {
+          const j = JSON.parse(text) as { error?: string }
+          if (j.error) msg = j.error
+        } catch {
+          /* keep */
+        }
+        setGalleryErrorMsg(msg)
+        await reloadGalleryPosts()
+        return
+      }
+      if (res.status === 204) {
+        setManualPosts(prev => {
+          const byId = new Map(prev.map(p => [p.id, p]))
+          return orderedIds.map((id, i) => {
+            const p = byId.get(id)
+            if (!p) return null
+            return { ...p, sortOrder: i }
+          }).filter((x): x is ManualPostDto => x !== null)
+        })
+      }
+    } catch {
+      setGalleryErrorMsg('Não foi possível salvar a ordem.')
+      await reloadGalleryPosts()
+    } finally {
+      setGalleryReorderSaving(false)
+    }
+  }
+
+  function handleGalleryDragOver(e: React.DragEvent) {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+  }
+
+  function handleGalleryDrop(e: React.DragEvent, targetId: string) {
+    e.preventDefault()
+    const draggedId = e.dataTransfer.getData('text/plain')
+    if (!draggedId || draggedId === targetId) return
+    setManualPosts(prev => {
+      const from = prev.findIndex(p => p.id === draggedId)
+      const to = prev.findIndex(p => p.id === targetId)
+      if (from < 0 || to < 0 || from === to) return prev
+      const next = [...prev]
+      const [item] = next.splice(from, 1)
+      next.splice(to, 0, item)
+      const ids = next.map(p => p.id)
+      queueMicrotask(() => {
+        void persistGalleryOrder(ids)
+      })
+      return next
+    })
   }
 
   function handleLogout() {
@@ -458,8 +544,9 @@ export default function Admin() {
             <section className="admin-section" aria-labelledby="admin-gallery-title">
               <h2 id="admin-gallery-title">Galeria (substitui o feed no site)</h2>
               <p className="admin-section__hint max-w-none">
-                Envie uma imagem (máx. 8 MB). Com 6 fotos, a mais antiga é removida automaticamente. Link do post é
-                opcional; se vazio, usamos o perfil @rangoderua.
+                Envie uma imagem (máx. 8 MB). Com 6 fotos, a mais antiga é removida automaticamente. No site, o clique
+                na foto leva ao perfil @rangoderua no Instagram. <strong>Arraste as fotos</strong> abaixo para definir a
+                ordem em que aparecem na home.
               </p>
               <p className="admin-section__count">
                 {manualPosts.length} / {MAX_GALLERY} fotos
@@ -485,16 +572,6 @@ export default function Admin() {
                     <img src={previewUrl} alt="" className="admin-upload-preview__img" />
                   </div>
                 )}
-                <div className="form-group">
-                  <label htmlFor="admin-gi-link">Link do post no Instagram (opcional)</label>
-                  <input
-                    id="admin-gi-link"
-                    type="url"
-                    placeholder="https://www.instagram.com/p/…"
-                    value={giLink}
-                    onChange={e => setGiLink(e.target.value)}
-                  />
-                </div>
                 <div className="admin-section__actions">
                   <button type="submit" className="btn btn--primary" disabled={gallerySaving || !galleryFile}>
                     {gallerySaving ? 'Enviando…' : 'Enviar foto'}
@@ -513,29 +590,61 @@ export default function Admin() {
               </form>
 
               {manualPosts.length > 0 && (
-                <ul className="admin-gallery-grid">
-                  {manualPosts.map(p => (
-                    <li key={p.id} className="admin-gallery-card">
-                      <a href={p.permalink} target="_blank" rel="noopener noreferrer" className="admin-gallery-card__img-wrap">
-                        <img src={p.imageUrl} alt="" />
-                      </a>
-                      <div className="admin-gallery-card__body">
-                        <span className="admin-gallery-card__date">
-                          {new Date(p.createdAt).toLocaleString('pt-BR', {
-                            dateStyle: 'short',
-                            timeStyle: 'short',
-                          })}
+                <>
+                  <p className="admin-gallery-dnd-hint" role="note">
+                    Dica: segure e arraste um card sobre outro para reordenar. A ordem da esquerda para a direita é a
+                    mesma do site.
+                  </p>
+                  <ul className="admin-gallery-grid" aria-label="Fotos da galeria (arraste para reordenar)">
+                    {manualPosts.map(p => (
+                      <li
+                        key={p.id}
+                        className={`admin-gallery-card${galleryDraggingId === p.id ? ' admin-gallery-card--dragging' : ''}`}
+                        draggable
+                        onDragStart={e => {
+                          e.dataTransfer.setData('text/plain', p.id)
+                          e.dataTransfer.effectAllowed = 'move'
+                          setGalleryDraggingId(p.id)
+                        }}
+                        onDragEnd={() => setGalleryDraggingId(null)}
+                        onDragOver={handleGalleryDragOver}
+                        onDrop={e => handleGalleryDrop(e, p.id)}
+                      >
+                        <span className="admin-gallery-card__handle" aria-hidden>
+                          ⋮⋮
                         </span>
-                        <a className="admin-gallery-card__link" href={p.permalink} target="_blank" rel="noopener noreferrer">
-                          Abrir post
+                        <a
+                          href={p.permalink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="admin-gallery-card__img-wrap"
+                          draggable={false}
+                        >
+                          <img src={p.imageUrl} alt="" draggable={false} />
                         </a>
-                        <button type="button" className="btn btn--outline admin-gallery-delete" onClick={() => void handleDeletePost(p.id)}>
-                          Excluir
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                        <div className="admin-gallery-card__body">
+                          <span className="admin-gallery-card__date">
+                            {new Date(p.createdAt).toLocaleString('pt-BR', {
+                              dateStyle: 'short',
+                              timeStyle: 'short',
+                            })}
+                          </span>
+                          <a className="admin-gallery-card__link" href={p.permalink} target="_blank" rel="noopener noreferrer">
+                            Ver no Instagram
+                          </a>
+                          <button type="button" className="btn btn--outline admin-gallery-delete" onClick={() => void handleDeletePost(p.id)}>
+                            Excluir
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                  {galleryReorderSaving && (
+                    <p className="admin-gallery-reorder-status" role="status">
+                      Salvando ordem…
+                    </p>
+                  )}
+                </>
               )}
               {galleryErrorMsg != null && galleryFeedback === 'idle' && (
                 <p className="admin-feedback-error admin-section__foot" role="alert">

@@ -8,6 +8,7 @@ type ManualGalleryPost = {
   imageUrl: string
   permalink: string
   createdAt: string
+  sortOrder?: number
 }
 
 const SKELETON_COUNT = 6
@@ -29,7 +30,9 @@ export default function InstagramFeed() {
         }
         const data = (await res.json()) as ManualGalleryPost[]
         if (!cancelled) {
-          setPosts(Array.isArray(data) ? data : [])
+          const list = Array.isArray(data) ? [...data] : []
+          list.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+          setPosts(list)
         }
       } catch (e) {
         if (!cancelled) {

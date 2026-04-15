@@ -20,4 +20,7 @@ export const ADMIN_SETTINGS_ENDPOINT = `${API_BASE}/api/admin/settings`
 /** Galeria manual substituta do Instagram na Home (leitura pública). */
 export const ADMIN_MANUAL_POSTS_ENDPOINT = `${API_BASE}/api/admin/posts`
 
+/** Salvar ordem das fotos (admin autenticado). */
+export const ADMIN_MANUAL_POSTS_ORDER_ENDPOINT = `${API_BASE}/api/admin/posts/order`
+
 export const HEALTH_ENDPOINT = `${API_BASE}/health`
