@@ -6,6 +6,10 @@ import { Resend } from 'resend'
 import { prisma } from '../lib/prisma.js'
 import { createVolunteerSchema, formatZodIssues } from '../schemas/volunteerCreate.js'
 
+function unknownToError(value: unknown): Error {
+  return value instanceof Error ? value : new Error(String(value))
+}
+
 const availabilityEnum = ['ONCE_A_MONTH', 'TWICE_A_MONTH', 'EVENTUAL', 'REMOTE'] as const
 
 const volunteerJsonSchema = {
@@ -115,13 +119,14 @@ const volunteersListAndDeleteScoped: FastifyPluginAsync = async scope => {
       const { id } = request.params as { id: string }
       try {
         await prisma.volunteer.delete({ where: { id } })
-      } catch (err) {
+      } catch (caught: unknown) {
         if (
-          err instanceof Prisma.PrismaClientKnownRequestError &&
-          err.code === 'P2025'
+          caught instanceof Prisma.PrismaClientKnownRequestError &&
+          caught.code === 'P2025'
         ) {
           return reply.status(404).send({ error: 'Voluntário não encontrado.' })
         }
+        const err = unknownToError(caught)
         request.log.error({ err }, 'Erro ao excluir voluntário')
         return reply.status(500).send({ error: 'Não foi possível excluir o voluntário.' })
       }
@@ -234,13 +239,14 @@ const volunteerPlugin: FastifyPluginAsync = async app => {
                 return
               }
               console.log('[resend] Resposta:', data)
-            } catch (err) {
-              console.error('ERRO CRÍTICO RESEND:', err)
+            } catch (caught: unknown) {
+              console.error('ERRO CRÍTICO RESEND:', caught)
             }
           })()
         })
         return reply
-      } catch (err) {
+      } catch (caught: unknown) {
+        const err = unknownToError(caught)
         log.error({ err }, 'Erro inesperado ao cadastrar voluntário')
         console.error('Falha no POST /api/volunteers:', err)
         return reply.status(500).send({
