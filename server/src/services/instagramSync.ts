@@ -291,6 +291,8 @@ async function fetchFeedText(url: string): Promise<string> {
     transformResponse: r => r,
   })
 
+  console.log('CONTEÚDO RECEBIDO DO FEED:', data)
+
   if (typeof data !== 'string') {
     throw new Error(`Resposta inesperada (tipo ${typeof data}) para status ${status}`)
   }
