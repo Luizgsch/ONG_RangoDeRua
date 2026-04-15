@@ -4,7 +4,7 @@ import Numbers from '../components/Numbers'
 import WhatWeDo from '../components/WhatWeDo'
 import FrontLines from '../components/FrontLines'
 import Programs from '../components/Programs'
-import NextBatch from '../components/NextBatch'
+import NextEventBanner from '../components/NextEventBanner'
 import Partners from '../components/Partners'
 import Awards from '../components/Awards'
 import InstagramFeed from '../components/InstagramFeed'
@@ -21,7 +21,7 @@ export default function Home() {
       <WhatWeDo />
       <FrontLines />
       <Programs />
-      <NextBatch />
+      <NextEventBanner />
       <Partners />
       <Awards />
       <InstagramFeed />

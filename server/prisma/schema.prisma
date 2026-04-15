@@ -47,3 +47,24 @@ model InstagramPost {
 
   @@map("instagram_posts")
 }
+
+/// Configuração única do painel (próximo encontro, local). `id` fixo `default`.
+model DashboardSettings {
+  id            String    @id @default("default")
+  nextEventDate DateTime? @map("next_event_date")
+  eventLocation String?   @map("event_location") @db.VarChar(500)
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@map("dashboard_settings")
+}
+
+/// Até 6 fotos manuais (storage + roleta por `createdAt`).
+model ManualPost {
+  id        String   @id @default(uuid()) @db.Uuid
+  imageUrl  String   @map("image_url")
+  imageKey  String   @map("image_key")
+  permalink String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("manual_posts")
+}

@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
-import { INSTAGRAM_CACHE_ENDPOINT } from '../config/api'
+import { ADMIN_MANUAL_POSTS_ENDPOINT } from '../config/api'
 
 const INSTAGRAM_PROFILE = 'https://www.instagram.com/rangoderua'
 
-type InstagramCachePost = {
+type ManualGalleryPost = {
   id: string
   imageUrl: string
   permalink: string
-  caption: string | null
   createdAt: string
 }
 
@@ -34,7 +33,7 @@ function bentoClassAt(index: number, total: number): string {
 const SKELETON_COUNT = 6
 
 export default function InstagramFeed() {
-  const [posts, setPosts] = useState<InstagramCachePost[]>([])
+  const [posts, setPosts] = useState<ManualGalleryPost[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -42,11 +41,11 @@ export default function InstagramFeed() {
     let cancelled = false
     ;(async () => {
       try {
-        const res = await fetch(INSTAGRAM_CACHE_ENDPOINT)
+        const res = await fetch(ADMIN_MANUAL_POSTS_ENDPOINT)
         if (!res.ok) {
           throw new Error(`Erro ${res.status}`)
         }
-        const data = (await res.json()) as InstagramCachePost[]
+        const data = (await res.json()) as ManualGalleryPost[]
         if (!cancelled) {
           setPosts(Array.isArray(data) ? data : [])
         }
@@ -160,7 +159,7 @@ export default function InstagramFeed() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`group block min-h-0 min-w-0 self-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 ${bentoClassAt(i, posts.length)}`}
-                title={p.caption?.trim() || 'Abrir no Instagram'}
+                title="Abrir no Instagram"
               >
                 <div className="relative w-full max-w-full overflow-hidden rounded-2xl bg-zinc-800 ring-1 ring-white/10 transition-transform duration-200 group-hover:scale-[1.02] group-hover:ring-pink-400/40">
                   <img
@@ -170,13 +169,6 @@ export default function InstagramFeed() {
                     decoding="async"
                     className="aspect-square w-full object-cover"
                   />
-                  {p.caption?.trim() ? (
-                    <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 pt-8">
-                      <p className="line-clamp-2 text-left text-xs text-white/95 sm:text-sm">
-                        {p.caption.trim()}
-                      </p>
-                    </div>
-                  ) : null}
                 </div>
               </a>
             ))}

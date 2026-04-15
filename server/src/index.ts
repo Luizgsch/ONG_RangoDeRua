@@ -39,6 +39,7 @@ const app = await buildApp({
       { name: 'Autenticação', description: 'Login administrativo (JWT)' },
       { name: 'Voluntários', description: 'Cadastro e listagem de voluntários' },
       { name: 'Instagram', description: 'Cache do feed para o site' },
+      { name: 'Admin', description: 'Painel: agenda e galeria manual' },
     ],
     servers: [{ url: `http://localhost:${port}`, description: 'Ambiente local' }],
     components: {

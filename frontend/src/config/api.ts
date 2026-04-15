@@ -14,6 +14,10 @@ export const API_BASE = resolvedBase.replace(/\/$/, '')
 
 export const VOLUNTEERS_ENDPOINT = `${API_BASE}/api/volunteers`
 
-export const INSTAGRAM_CACHE_ENDPOINT = `${API_BASE}/api/instagram-cache`
+/** Configuração pública da Home (próximo encontro). */
+export const ADMIN_SETTINGS_ENDPOINT = `${API_BASE}/api/admin/settings`
+
+/** Galeria manual substituta do Instagram na Home (leitura pública). */
+export const ADMIN_MANUAL_POSTS_ENDPOINT = `${API_BASE}/api/admin/posts`
 
 export const HEALTH_ENDPOINT = `${API_BASE}/health`
